@@ -1,0 +1,4 @@
+split_expenses:
+  description: Calculate the split for {total_amount} amount among {participants}
+  expected_output: A detailed breakdown of who owes who.
+  agent: accountant

@@ -1,0 +1,9 @@
+plan_itinerary:
+  description: Create a 3-day itinerary for {topic}
+  expected_output: A detailed daily plan.
+  agent: planner
+
+provide_insights:
+  description: Give 5 hidden gems for {topic}
+  expected_output: A list of 5 places with descriptions.
+  agent: local_expert
