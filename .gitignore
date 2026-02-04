@@ -1,0 +1,21 @@
+# Dependencies
+node_modules/
+.venv/
+venv/
+env/
+
+# Environment Variables
+.env
+
+# System Files
+.DS_Store
+
+# Python
+__pycache__/
+*.py[cod]
+*.so
+
+# Build Outputs
+dist/
+build/
+coverage/
