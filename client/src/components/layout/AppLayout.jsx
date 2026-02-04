@@ -83,7 +83,7 @@ const AppLayout = ({ children }) => {
                             animate={{ opacity: 1 }}
                             className="text-2xl font-bold bg-gradient-to-r from-brand-primary to-brand-accent bg-clip-text text-transparent"
                         >
-                            TravelExpress
+                            ExploreXpress
                         </motion.h1>
                     ) : (
                         <div className="w-8 h-8 rounded-full bg-gradient-to-br from-brand-primary to-brand-accent mx-auto" />
