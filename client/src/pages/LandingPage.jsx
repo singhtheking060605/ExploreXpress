@@ -1,15 +1,22 @@
-
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, Globe, ShieldCheck, Zap, Moon, Sun, Menu, X, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import AuthContext from '../context/AuthContext';
+import { GoogleLogin } from '@react-oauth/google';
 
 const LandingPage = () => {
     const navigate = useNavigate();
+    const { user, login, signup, googleLoginHandler } = useContext(AuthContext);
     const [isDarkMode, setIsDarkMode] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const [showLogin, setShowLogin] = useState(false); // Quick toggle for demo
+    const [showLogin, setShowLogin] = useState(false);
     const [authMode, setAuthMode] = useState('login'); // 'login' or 'signup'
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [name, setName] = useState("");
+    const [error, setError] = useState("");
+
 
     useEffect(() => {
         // Check system preference or localStorage
@@ -21,6 +28,32 @@ const LandingPage = () => {
     const toggleTheme = () => {
         setIsDarkMode(!isDarkMode);
         document.documentElement.classList.toggle('dark');
+    };
+
+    const handleStartPlanning = () => {
+        if (user) {
+            navigate('/dashboard');
+        } else {
+            setAuthMode('login');
+            setShowLogin(true);
+        }
+    };
+
+    const handleAuthSubmit = async () => {
+        setError("");
+        let result;
+        if (authMode === 'login') {
+            result = await login(email, password);
+        } else {
+            result = await signup(name, email, password);
+        }
+
+        if (result.success) {
+            setShowLogin(false);
+            navigate('/dashboard');
+        } else {
+            setError(result.message);
+        }
     };
 
     return (
@@ -45,12 +78,23 @@ const LandingPage = () => {
                         {isDarkMode ? <Sun size={20} className="text-yellow-400" /> : <Moon size={20} />}
                     </button>
                     <div className="h-6 w-px bg-slate-300 dark:bg-slate-700" />
-                    <button onClick={() => { setAuthMode('login'); setShowLogin(true); }} className="text-slate-600 dark:text-slate-300 font-medium hover:text-brand-primary transition-colors">
-                        Log In
-                    </button>
-                    <button onClick={() => { setAuthMode('signup'); setShowLogin(true); }} className="px-5 py-2 rounded-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold hover:opacity-90 transition-opacity">
-                        Sign Up
-                    </button>
+                    {user ? (
+                        <div className="flex items-center gap-4">
+                            <span className="text-slate-600 dark:text-slate-300 font-medium">Hi, {user.username}</span>
+                            <button onClick={() => navigate('/dashboard')} className="px-5 py-2 rounded-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold hover:opacity-90 transition-opacity">
+                                Dashboard
+                            </button>
+                        </div>
+                    ) : (
+                        <>
+                            <button onClick={() => { setAuthMode('login'); setShowLogin(true); setError(""); }} className="text-slate-600 dark:text-slate-300 font-medium hover:text-brand-primary transition-colors">
+                                Log In
+                            </button>
+                            <button onClick={() => { setAuthMode('signup'); setShowLogin(true); setError(""); }} className="px-5 py-2 rounded-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold hover:opacity-90 transition-opacity">
+                                Sign Up
+                            </button>
+                        </>
+                    )}
                 </div>
 
                 {/* Mobile Menu Toggle */}
@@ -74,12 +118,20 @@ const LandingPage = () => {
                     animate={{ opacity: 1, y: 0 }}
                     className="md:hidden absolute top-16 left-0 right-0 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 p-4 flex flex-col gap-4 z-40 shadow-xl"
                 >
-                    <button onClick={() => { setAuthMode('login'); setShowLogin(true); }} className="w-full py-3 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-white font-medium">
-                        Log In
-                    </button>
-                    <button onClick={() => { setAuthMode('signup'); setShowLogin(true); }} className="w-full py-3 rounded-xl bg-brand-primary text-white font-bold">
-                        Sign Up
-                    </button>
+                    {user ? (
+                        <button onClick={() => navigate('/dashboard')} className="w-full py-3 rounded-xl bg-brand-primary text-white font-bold">
+                            Dashboard
+                        </button>
+                    ) : (
+                        <>
+                            <button onClick={() => { setAuthMode('login'); setShowLogin(true); setError(""); }} className="w-full py-3 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-white font-medium">
+                                Log In
+                            </button>
+                            <button onClick={() => { setAuthMode('signup'); setShowLogin(true); setError(""); }} className="w-full py-3 rounded-xl bg-brand-primary text-white font-bold">
+                                Sign Up
+                            </button>
+                        </>
+                    )}
                 </motion.div>
             )}
 
@@ -110,7 +162,7 @@ const LandingPage = () => {
                         <motion.button
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
-                            onClick={() => navigate('/dashboard')}
+                            onClick={handleStartPlanning}
                             className="px-8 py-4 rounded-full bg-gradient-to-r from-brand-primary to-brand-accent text-white font-bold shadow-lg shadow-brand-primary/30 flex items-center gap-2 text-lg"
                         >
                             Start Planning <ArrowRight size={20} />
@@ -163,23 +215,43 @@ const LandingPage = () => {
                             {authMode === 'login' ? 'Welcome Back' : 'Create an Account'}
                         </h2>
 
+                        {error && <div className="mb-4 text-red-500 text-center">{error}</div>}
+
                         <div className="space-y-4">
                             {authMode === 'signup' && (
                                 <div>
                                     <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Full Name</label>
-                                    <input type="text" placeholder="John Doe" className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-brand-primary outline-none dark:text-white transition-all" />
+                                    <input
+                                        type="text"
+                                        placeholder="John Doe"
+                                        className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-brand-primary outline-none dark:text-white transition-all"
+                                        value={name}
+                                        onChange={(e) => setName(e.target.value)}
+                                    />
                                 </div>
                             )}
                             <div>
                                 <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Email</label>
-                                <input type="email" placeholder="you@example.com" className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-brand-primary outline-none dark:text-white transition-all" />
+                                <input
+                                    type="email"
+                                    placeholder="you@example.com"
+                                    className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-brand-primary outline-none dark:text-white transition-all"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                />
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Password</label>
-                                <input type="password" placeholder="••••••••" className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-brand-primary outline-none dark:text-white transition-all" />
+                                <input
+                                    type="password"
+                                    placeholder="••••••••"
+                                    className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-brand-primary outline-none dark:text-white transition-all"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                />
                             </div>
 
-                            <button onClick={() => navigate('/dashboard')} className="w-full py-3 rounded-xl bg-brand-primary text-white font-bold hover:bg-brand-primary/90 transition-colors shadow-lg shadow-brand-primary/30">
+                            <button onClick={handleAuthSubmit} className="w-full py-3 rounded-xl bg-brand-primary text-white font-bold hover:bg-brand-primary/90 transition-colors shadow-lg shadow-brand-primary/30">
                                 {authMode === 'login' ? 'Log In' : 'Sign Up'}
                             </button>
 
@@ -188,13 +260,21 @@ const LandingPage = () => {
                                 <div className="relative flex justify-center text-sm"><span className="px-2 bg-white dark:bg-slate-900 text-slate-500">Or continue with</span></div>
                             </div>
 
-                            <div className="grid grid-cols-2 gap-4">
-                                <button className="py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center justify-center gap-2 font-medium dark:text-slate-300 transition-colors">
-                                    <span className="text-xl">G</span> Google
-                                </button>
-                                <button className="py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center justify-center gap-2 font-medium dark:text-slate-300 transition-colors">
-                                    <span className="text-xl"></span> Apple
-                                </button>
+                            <div className="flex justify-center">
+                                <GoogleLogin
+                                    onSuccess={async (credentialResponse) => {
+                                        const result = await googleLoginHandler(credentialResponse);
+                                        if (result.success) {
+                                            setShowLogin(false);
+                                            navigate("/dashboard");
+                                        } else {
+                                            setError(result.message);
+                                        }
+                                    }}
+                                    onError={() => {
+                                        setError("Google Login Failed");
+                                    }}
+                                />
                             </div>
                         </div>
                     </motion.div>
@@ -205,4 +285,3 @@ const LandingPage = () => {
 };
 
 export default LandingPage;
-
