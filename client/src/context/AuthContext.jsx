@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect } from "react";
-import axios from "axios";
+import api from "../services/api";
 import { jwtDecode } from "jwt-decode";
 import { googleLogout } from "@react-oauth/google";
 
@@ -10,7 +10,7 @@ export const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
 
     // Configure axios base URL
-    axios.defaults.baseURL = "http://localhost:4000";
+    // axios.defaults.baseURL = "http://localhost:4000";
 
     useEffect(() => {
         const token = localStorage.getItem("accessToken");
@@ -23,7 +23,7 @@ export const AuthProvider = ({ children }) => {
                     logout();
                 } else {
                     // Verify with backend or just trust decoded for now and let backend 401 handle it
-                    axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+                    api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
                     setUser(decoded.user);
                 }
             } catch (error) {
@@ -35,13 +35,13 @@ export const AuthProvider = ({ children }) => {
 
     const login = async (email, password) => {
         try {
-            const response = await axios.post("/api/users/login", {
+            const response = await api.post("/users/login", {
                 email,
                 password,
             });
             const { accessToken } = response.data;
             localStorage.setItem("accessToken", accessToken);
-            axios.defaults.headers.common["Authorization"] = `Bearer ${accessToken}`;
+            api.defaults.headers.common["Authorization"] = `Bearer ${accessToken}`;
             const decoded = jwtDecode(accessToken);
             setUser(decoded.user);
             return { success: true };
@@ -55,14 +55,14 @@ export const AuthProvider = ({ children }) => {
 
     const signup = async (name, email, password) => {
         try {
-            const response = await axios.post("/api/users/signup", {
+            const response = await api.post("/users/signup", {
                 name,
                 email,
                 password,
             });
             const { accessToken } = response.data;
             localStorage.setItem("accessToken", accessToken);
-            axios.defaults.headers.common["Authorization"] = `Bearer ${accessToken}`;
+            api.defaults.headers.common["Authorization"] = `Bearer ${accessToken}`;
             const decoded = jwtDecode(accessToken);
             setUser(decoded.user);
             return { success: true };
@@ -77,12 +77,12 @@ export const AuthProvider = ({ children }) => {
     const googleLoginHandler = async (credentialResponse) => {
         try {
             const { credential } = credentialResponse;
-            const response = await axios.post("/api/users/google", {
+            const response = await api.post("/users/google", {
                 token: credential,
             });
             const { accessToken } = response.data;
             localStorage.setItem("accessToken", accessToken);
-            axios.defaults.headers.common["Authorization"] = `Bearer ${accessToken}`;
+            api.defaults.headers.common["Authorization"] = `Bearer ${accessToken}`;
             const decoded = jwtDecode(accessToken);
             setUser(decoded.user);
             return { success: true };
@@ -96,7 +96,7 @@ export const AuthProvider = ({ children }) => {
 
     const logout = () => {
         localStorage.removeItem("accessToken");
-        delete axios.defaults.headers.common["Authorization"];
+        delete api.defaults.headers.common["Authorization"];
         setUser(null);
         googleLogout();
     };
