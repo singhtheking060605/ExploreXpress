@@ -35,6 +35,21 @@ export const TripProvider = ({ children }) => {
         activities: 25
     });
 
+    // Map Markers
+    const [markers, setMarkers] = useState([]);
+
+    const addMarker = (marker) => {
+        setMarkers(prev => {
+            // Avoid duplicates based on coordinates
+            const exists = prev.find(m => m.lng === marker.lng && m.lat === marker.lat);
+            if (exists) return prev;
+            return [...prev, marker];
+        });
+    };
+
+    const clearMarkers = () => setMarkers([]);
+    const removeMarker = (id) => setMarkers(prev => prev.filter(m => m.id !== id));
+
     // Helper to update steps
     const completeStep = (step) => {
         if (!completedSteps.includes(step)) {
@@ -66,7 +81,9 @@ export const TripProvider = ({ children }) => {
 
         isCapped, setIsCapped,
         maxBudget, setMaxBudget,
-        allocation, setAllocation
+        allocation, setAllocation,
+        markers, setMarkers,
+        addMarker, clearMarkers, removeMarker
     }), [
         currentStep, completedSteps,
         startDate, fromLocation, destinations,

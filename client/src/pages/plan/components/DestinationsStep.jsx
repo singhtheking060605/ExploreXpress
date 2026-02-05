@@ -1,47 +1,169 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useTrip } from '../TripContext';
-import { Calendar, MapPin, Plus, X, Search, Clock } from 'lucide-react';
+import { Calendar, MapPin, Plus, X, Search, Clock, ChevronLeft } from 'lucide-react';
 import { format } from 'date-fns';
+import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
+import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
+import mapboxgl from 'mapbox-gl';
+
+// Geocoder Component
+const GeocoderInput = ({ placeholder, onResult, defaultValue }) => {
+    const containerRef = useRef(null);
+
+    useEffect(() => {
+        if (!containerRef.current) return;
+
+        // Access token must be set
+        mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
+
+        const geocoder = new MapboxGeocoder({
+            accessToken: mapboxgl.accessToken,
+            types: 'place,locality,neighborhood',
+            placeholder: placeholder,
+            mapboxgl: mapboxgl
+        });
+
+        geocoder.addTo(containerRef.current);
+
+        // Handle result
+        geocoder.on('result', (e) => {
+            const { result } = e;
+            const { center, place_name, text } = result; // center is [lng, lat]
+            if (onResult) {
+                onResult({
+                    lng: center[0],
+                    lat: center[1],
+                    name: text, // Use short name for marker
+                    fullName: place_name
+                });
+            }
+        });
+
+        // Set default value if provided
+        if (defaultValue) {
+            geocoder.setInput(defaultValue);
+        }
+
+        // Cleanup
+        return () => {
+            geocoder.onRemove();
+            if (containerRef.current) {
+                containerRef.current.innerHTML = '';
+            }
+        };
+    }, []);
+
+    return (
+        <div ref={containerRef} className="w-full geocoder-wrapper" />
+    );
+};
 
 const DestinationsStep = () => {
     const {
         startDate, setStartDate,
         fromLocation, setFromLocation,
         destinations, setDestinations,
-        completeStep, goToStep
+        completeStep, goToStep,
+        addMarker, clearMarkers, removeMarker
     } = useTrip();
 
-    const [locationInput, setLocationInput] = useState('');
+    const [locationInput, setLocationInput] = useState(null); // Holds object {lng, lat, name}
     const [durationInput, setDurationInput] = useState('3');
-    const [isAdding, setIsAdding] = useState(false);
+
+    // Custom style for Geocoder to match the theme
+    useEffect(() => {
+        const style = document.createElement('style');
+        style.innerHTML = `
+            .geocoder-wrapper .mapboxgl-ctrl-geocoder {
+                width: 100%;
+                max-width: none;
+                box-shadow: none;
+                background-color: transparent;
+            }
+            .geocoder-wrapper .mapboxgl-ctrl-geocoder--input {
+                padding: 12px 12px 12px 40px;
+                height: auto;
+                border-radius: 0.75rem; /* rounded-xl */
+                background-color: white; /* or slate-50 based on theme */
+                border: 1px solid #e2e8f0; /* slate-200 */
+                font-family: inherit;
+            }
+            .dark .geocoder-wrapper .mapboxgl-ctrl-geocoder--input {
+                background-color: #1e293b; /* slate-800 */
+                border-color: #334155; /* slate-700 */
+                color: white;
+            }
+            .geocoder-wrapper .mapboxgl-ctrl-geocoder--icon {
+                top: 12px;
+            }
+        `;
+        document.head.appendChild(style);
+        return () => document.head.removeChild(style);
+    }, []);
+
 
     const handleAddDestination = () => {
         if (!locationInput) return;
-        setDestinations(prev => [...prev, {
+
+        const newDest = {
             id: Date.now(),
-            city: locationInput,
-            duration: durationInput
-        }]);
-        setLocationInput('');
+            city: locationInput.name,
+            fullName: locationInput.fullName,
+            duration: durationInput,
+            lng: locationInput.lng,
+            lat: locationInput.lat
+        };
+
+        setDestinations(prev => [...prev, newDest]);
+
+        // Add marker to map
+        addMarker({
+            id: newDest.id,
+            lng: newDest.lng,
+            lat: newDest.lat,
+            type: 'destination',
+            label: (destinations.length + 1).toString(), // Logic for next number
+            name: newDest.city
+        });
+
+        setLocationInput(null);
         setDurationInput('3');
-        setIsAdding(false);
+        // Clear geocoder input visually? The component re-mounts or we need a ref?
+        // Simpler to just let user clear or re-type.
+        // For now, the geocoder keeps its state unless we force reset.
+        // Let's assume user types new search.
     };
 
-    const removeDestination = (id) => {
+    const handleRemoveDestination = (id) => {
         setDestinations(prev => prev.filter(d => d.id !== id));
+        removeMarker(id);
     };
 
-    const handleContinue = () => {
-        if (destinations.length > 0 && startDate && fromLocation) {
+    const handleSetOrigin = (location) => {
+        setFromLocation(location.name); // Store string name for form
+
+        // Add start marker
+        addMarker({
+            id: 'start',
+            lng: location.lng,
+            lat: location.lat,
+            type: 'start',
+            name: location.name
+        });
+    };
+
+    const isValid = destinations.length > 0 && startDate && fromLocation;
+
+    const handleContinueClick = () => {
+        if (isValid) {
             completeStep(1);
             goToStep(2);
         }
     };
 
-    const isValid = destinations.length > 0 && startDate && fromLocation;
-
     return (
-        <div className="space-y-8">
+        <div className="space-y-8 relative">
+
             <div className="flex items-center gap-4 mb-2">
                 <div className="bg-green-100 p-3 rounded-xl text-green-600">
                     <MapPin size={24} />
@@ -58,7 +180,7 @@ const DestinationsStep = () => {
                         When does your journey begin?
                     </label>
                     <div className="relative">
-                        <Calendar className="absolute left-3 top-3 text-slate-400" size={18} />
+                        <Calendar className="absolute left-3 top-3.5 text-slate-400 z-10" size={18} />
                         <input
                             type="date"
                             value={startDate || ''}
@@ -72,14 +194,14 @@ const DestinationsStep = () => {
                         Where are you starting from?
                     </label>
                     <div className="relative">
-                        <MapPin className="absolute left-3 top-3 text-slate-400" size={18} />
-                        <input
-                            type="text"
-                            placeholder="e.g. Mumbai, India"
-                            value={fromLocation}
-                            onChange={(e) => setFromLocation(e.target.value)}
-                            className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-brand-primary/50 transition-all outline-none"
-                        />
+                        {/* Wrapper for Geocoder */}
+                        <div className="geocoder-origin-wrapper">
+                            <GeocoderInput
+                                placeholder="e.g. Mumbai, India"
+                                onResult={handleSetOrigin}
+                                defaultValue={fromLocation}
+                            />
+                        </div>
                     </div>
                 </div>
             </div>
@@ -104,7 +226,7 @@ const DestinationsStep = () => {
                                 </div>
                             </div>
                             <button
-                                onClick={() => removeDestination(dest.id)}
+                                onClick={() => handleRemoveDestination(dest.id)}
                                 className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
                             >
                                 <X size={18} />
@@ -116,14 +238,9 @@ const DestinationsStep = () => {
                     <div className="p-4 bg-brand-primary/5 rounded-xl border-2 border-dashed border-brand-primary/20">
                         <div className="flex gap-4">
                             <div className="flex-1 relative">
-                                <Search className="absolute left-3 top-3.5 text-brand-primary/40" size={18} />
-                                <input
-                                    type="text"
+                                <GeocoderInput
                                     placeholder="Search for a city..."
-                                    value={locationInput}
-                                    onChange={(e) => setLocationInput(e.target.value)}
-                                    className="w-full pl-10 pr-4 py-3 rounded-lg border-none bg-white/80 focus:ring-2 focus:ring-brand-primary/20 text-sm"
-                                    onKeyDown={(e) => e.key === 'Enter' && handleAddDestination()}
+                                    onResult={setLocationInput}
                                 />
                             </div>
                             <div className="w-24 relative">
@@ -148,9 +265,17 @@ const DestinationsStep = () => {
                 </div>
             </div>
 
-            <div className="flex justify-end pt-4">
+            <div className="flex justify-between pt-4">
+                {/* Back button hidden on step 1 but layout preserved */}
                 <button
-                    onClick={handleContinue}
+                    disabled
+                    className="text-slate-300 dark:text-slate-700 font-medium px-4 py-2 cursor-default opacity-0"
+                >
+                    ← Back
+                </button>
+
+                <button
+                    onClick={handleContinueClick}
                     disabled={!isValid}
                     className="bg-gradient-to-r from-brand-primary to-brand-accent text-white px-8 py-3 rounded-xl font-bold shadow-lg shadow-brand-primary/30 hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                 >

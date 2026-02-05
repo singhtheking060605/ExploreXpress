@@ -350,7 +350,7 @@ const BudgetStep = () => {
             <div className="flex justify-between pt-4">
                 <button
                     onClick={() => goToStep(2)}
-                    className="text-slate-500 hover:text-slate-700 font-medium px-4 py-2 transition-colors"
+                    className="text-slate-500 hover:text-slate-700 font-medium px-4 py-2 transition-colors border-2 border-transparent hover:border-slate-200 rounded-xl"
                 >
                     ← Back to Preferences
                 </button>

@@ -517,7 +517,7 @@ const LandingPage = () => {
                                         useOneTap
                                         shape="pill"
                                         theme={isDarkMode ? "filled_black" : "outline"}
-                                        width="100%"
+                                        width="300"
                                     />
                                 </div>
                             </div>
