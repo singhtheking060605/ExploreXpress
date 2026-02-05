@@ -252,7 +252,7 @@ const LandingPage = () => {
 
     const handleStartPlanning = () => {
         if (user) {
-            navigate('/dashboard');
+            navigate('/explore');
         } else {
             setAuthMode('login');
             setShowLogin(true);
@@ -270,7 +270,7 @@ const LandingPage = () => {
 
         if (result.success) {
             setShowLogin(false);
-            navigate('/dashboard');
+            navigate('/explore');
         } else {
             setError(result.message);
         }
@@ -295,7 +295,7 @@ const LandingPage = () => {
                             {isDarkMode ? <Sun size={20} className="text-yellow-400" /> : <Moon size={20} className="text-slate-600 dark:text-slate-400" />}
                         </button>
                         {user ? (
-                            <button onClick={() => navigate('/dashboard')} className="px-6 py-2.5 rounded-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold hover:shadow-lg hover:-translate-y-0.5 transition-all">
+                            <button onClick={() => navigate('/explore')} className="px-6 py-2.5 rounded-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold hover:shadow-lg hover:-translate-y-0.5 transition-all">
                                 Dashboard
                             </button>
                         ) : (
@@ -323,7 +323,7 @@ const LandingPage = () => {
                     >
                         <div className="p-6 flex flex-col gap-4">
                             {user ? (
-                                <button onClick={() => navigate('/dashboard')} className="w-full py-3 bg-brand-primary text-white rounded-xl font-bold">Dashboard</button>
+                                <button onClick={() => navigate('/explore')} className="w-full py-3 bg-brand-primary text-white rounded-xl font-bold">Dashboard</button>
                             ) : (
                                 <>
                                     <button onClick={() => { setAuthMode('login'); setShowLogin(true); setIsMenuOpen(false); }} className="w-full py-3 bg-slate-100 dark:bg-slate-800 rounded-xl font-bold">Log In</button>
@@ -508,7 +508,7 @@ const LandingPage = () => {
                                             const result = await googleLoginHandler(credentialResponse);
                                             if (result.success) {
                                                 setShowLogin(false);
-                                                navigate("/dashboard");
+                                                navigate("/explore");
                                             } else {
                                                 setError(result.message);
                                             }

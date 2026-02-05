@@ -1,0 +1,19 @@
+{
+  "name": "ringmaster-project",
+  "version": "1.0.0",
+  "description": "Monorepo for Ringmaster Project",
+  "main": "index.js",
+  "scripts": {
+    "start": "npm run dev",
+    "dev": "concurrently \"npm run client\" \"npm run server\" \"npm run ai\"",
+    "client": "npm run dev --prefix client",
+    "server": "npm run dev --prefix server",
+    "ai": "cd ai_engine && .venv/bin/uvicorn src.ringmaster_ai.main:app --reload --port 8000"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
