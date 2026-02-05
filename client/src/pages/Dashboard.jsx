@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Calendar, MapPin, DollarSign, Clock, Plane } from 'lucide-react';
 import clsx from 'clsx';
 
 const Dashboard = () => {
+    const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState('itinerary');
 
     const itinerary = [
@@ -35,7 +37,10 @@ const Dashboard = () => {
                     <h1 className="text-3xl font-bold dark:text-white">Dashboard</h1>
                     <p className="text-slate-500 dark:text-slate-400">Welcome back, Aryan. Ready for your next adventure?</p>
                 </div>
-                <button className="px-6 py-2.5 bg-brand-primary text-white rounded-xl shadow-lg shadow-brand-primary/20 hover:bg-brand-primary/90 transition-colors font-medium">
+                <button
+                    onClick={() => navigate('/plan')}
+                    className="px-6 py-2.5 bg-brand-primary text-white rounded-xl shadow-lg shadow-brand-primary/20 hover:bg-brand-primary/90 transition-colors font-medium"
+                >
                     + New Trip
                 </button>
             </div>
@@ -62,7 +67,10 @@ const Dashboard = () => {
                                     <input type="text" defaultValue="Tokyo, Japan" className="w-full bg-slate-50 dark:bg-slate-800/50 rounded-xl py-3 pl-10 pr-4 text-sm dark:text-white border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-brand-primary/50 outline-none" />
                                 </div>
                             </div>
-                            <button className="w-full py-3 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-xl font-bold hover:opacity-90 transition-opacity">
+                            <button
+                                onClick={() => navigate('/plan')}
+                                className="w-full py-3 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-xl font-bold hover:opacity-90 transition-opacity"
+                            >
                                 Generate Itinerary
                             </button>
                         </div>

@@ -4,6 +4,8 @@ import AppLayout from './components/layout/AppLayout';
 import LandingPage from './pages/LandingPage';
 import Dashboard from './pages/Dashboard';
 import Expenses from './pages/Expenses';
+import PlanTrip from './pages/plan/PlanTrip';
+import { TripProvider } from './pages/plan/TripContext';
 import NotFound from './pages/NotFound';
 import ChatWidget from './components/common/ChatWidget';
 import ProtectedRoute from './components/layout/ProtectedRoute';
@@ -14,6 +16,15 @@ function App() {
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<LandingPage />} />
+
+        {/* Plan Trip Route (Custom Layout) */}
+        <Route path="/plan" element={
+          <ProtectedRoute>
+            <TripProvider>
+              <PlanTrip />
+            </TripProvider>
+          </ProtectedRoute>
+        } />
 
         {/* Protected Routes */}
         <Route element={<ProtectedRoute />}>

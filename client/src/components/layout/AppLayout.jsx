@@ -61,7 +61,7 @@ const AppLayout = ({ children }) => {
 
     const navItems = [
         { icon: Home, label: 'Dashboard', path: '/' },
-        { icon: Map, label: 'My Trips', path: '/trips' },
+        { icon: Map, label: 'Plan Trip', path: '/plan' },
         { icon: Wallet, label: 'Splitwise', path: '/expenses' },
         { icon: Building2, label: 'Hotel Portal', path: '/hotels' },
         { icon: Settings, label: 'Settings', path: '/settings' },
