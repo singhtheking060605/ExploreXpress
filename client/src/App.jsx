@@ -3,7 +3,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import AppLayout from './components/layout/AppLayout';
 import LandingPage from './pages/LandingPage';
 import Explore from './pages/Explore';
-import MakeMyTrip from './pages/MakeMyTrip';
+
 import Dashboard from './pages/Dashboard';
 import Expenses from './pages/Expenses';
 import PlanTrip from './pages/plan/PlanTrip';
@@ -39,7 +39,7 @@ function App() {
           */}
 
           <Route path="/explore" element={<AppLayout><Explore /></AppLayout>} />
-          <Route path="/plan" element={<AppLayout><MakeMyTrip /></AppLayout>} />
+
 
           {/* Dashboard is now the user's trips page */}
           <Route path="/dashboard" element={<AppLayout><Dashboard /></AppLayout>} />
