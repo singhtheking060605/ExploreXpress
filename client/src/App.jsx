@@ -1,9 +1,13 @@
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import AppLayout from './components/layout/AppLayout';
 import LandingPage from './pages/LandingPage';
+import Explore from './pages/Explore';
+import MakeMyTrip from './pages/MakeMyTrip';
 import Dashboard from './pages/Dashboard';
 import Expenses from './pages/Expenses';
+import HotelPortal from './pages/HotelPortal';
+import Settings from './pages/Settings';
 import NotFound from './pages/NotFound';
 import ChatWidget from './components/common/ChatWidget';
 import ProtectedRoute from './components/layout/ProtectedRoute';
@@ -17,21 +21,21 @@ function App() {
 
         {/* Protected Routes */}
         <Route element={<ProtectedRoute />}>
-          <Route path="/dashboard" element={
-            <AppLayout>
-              <Dashboard />
-            </AppLayout>
-          } />
+          {/* Default After Login Redirect to Explore or Dashboard? User said Explore is the page when user logs in */}
+          {/* Assuming LandingPage redirects to /explore if logged in, otherwise accessible. 
+              But here user asked 'Explore page this is the page which will open when user log ins'. 
+              Currently '/' is LandingPage. I'll keep '/' as Landing, but add '/explore' and '/plan'.
+          */}
 
-          <Route path="/expenses" element={
-            <AppLayout>
-              <Expenses />
-            </AppLayout>
-          } />
+          <Route path="/explore" element={<AppLayout><Explore /></AppLayout>} />
+          <Route path="/plan" element={<AppLayout><MakeMyTrip /></AppLayout>} />
 
-          <Route path="/trips" element={<AppLayout><Dashboard /></AppLayout>} />
-          <Route path="/hotels" element={<AppLayout><Dashboard /></AppLayout>} />
-          <Route path="/settings" element={<AppLayout><Dashboard /></AppLayout>} />
+          {/* Dashboard is now the user's trips page */}
+          <Route path="/dashboard" element={<AppLayout><Dashboard /></AppLayout>} />
+
+          <Route path="/expenses" element={<AppLayout><Expenses /></AppLayout>} />
+          <Route path="/hotels" element={<AppLayout><HotelPortal /></AppLayout>} />
+          <Route path="/settings" element={<AppLayout><Settings /></AppLayout>} />
         </Route>
 
         <Route path="*" element={<AppLayout><NotFound /></AppLayout>} />
