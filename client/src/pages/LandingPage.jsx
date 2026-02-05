@@ -7,15 +7,17 @@ import {
 import { useNavigate } from 'react-router-dom';
 import AuthContext from '../context/AuthContext';
 import { GoogleLogin } from '@react-oauth/google';
+import newYorkImg from '../assets/newyork.jpg';
+import dubaiImg from '../assets/dubai.jpg';
 
 // --- Assets / Data ---
 const DESTINATIONS = [
-    { name: "Santorini", img: "https://images.unsplash.com/photo-1613395877344-13d4c79e42d0?q=80&w=1000&auto=format&fit=crop" },
+    { name: "Santorini", img: "https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?q=80&w=1000&auto=format&fit=crop" },
     { name: "Kyoto", img: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?q=80&w=1000&auto=format&fit=crop" },
     { name: "Paris", img: "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?q=80&w=1000&auto=format&fit=crop" },
     { name: "Bali", img: "https://images.unsplash.com/photo-1537996194471-e657df975ab4?q=80&w=1000&auto=format&fit=crop" },
-    { name: "New York", img: "https://images.unsplash.com/photo-1496442226666-8d4a0e62e6e9?q=80&w=1000&auto=format&fit=crop" },
-    { name: "Dubai", img: "https://images.unsplash.com/photo-1512453979798-5ea904acfb5a?q=80&w=1000&auto=format&fit=crop" },
+    { name: "New York", img: newYorkImg },
+    { name: "Dubai", img: dubaiImg },
 ];
 
 const FEATURES = [
@@ -67,6 +69,95 @@ const FeatureCard = ({ icon: Icon, title, desc, delay }) => (
     </motion.div>
 );
 
+const UserReviews = () => {
+    const reviews = [
+        {
+            name: "Sarah Jenkins",
+            role: "Solo Traveler",
+            img: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200&auto=format&fit=crop",
+            text: "ExploreXpress changed the way I travel. The AI itinerary was spot on!",
+            location: "Bali, Indonesia"
+        },
+        {
+            name: "Michael Chen",
+            role: "Digital Nomad",
+            img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&auto=format&fit=crop",
+            text: "The budgeting tool is a lifesaver. Finally, I can track my expenses without a headache.",
+            location: "Kyoto, Japan"
+        },
+        {
+            name: "Emily & James",
+            role: "Couple",
+            img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop",
+            text: "We planned our honeymoon in minutes. Highly recommended for stress-free planning.",
+            location: "Santorini, Greece"
+        },
+        {
+            name: "David Smith",
+            role: "Adventure Seeker",
+            img: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=200&auto=format&fit=crop",
+            text: "Found hidden gems I would have never looked for. The local insights are amazing.",
+            location: "Patagonia, Chile"
+        }
+    ];
+
+    return (
+        <section className="py-16 px-6 bg-slate-50 dark:bg-brand-dark relative overflow-hidden">
+            {/* Decorative Background */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full max-w-5xl opacity-30 pointer-events-none">
+                <div className="absolute top-0 right-0 w-96 h-96 bg-brand-primary/10 rounded-full blur-[100px]" />
+                <div className="absolute bottom-0 left-0 w-96 h-96 bg-brand-accent/10 rounded-full blur-[100px]" />
+            </div>
+
+            <div className="max-w-7xl mx-auto relative z-10">
+                <div className="text-center mb-12">
+                    <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-4">
+                        Loved by Travelers Worldwide
+                    </h2>
+                    <p className="text-slate-600 dark:text-slate-400">
+                        See what our community has to say about their journeys.
+                    </p>
+                </div>
+
+                <div className="relative overflow-hidden">
+                    <div className="absolute inset-y-0 left-0 w-20 bg-gradient-to-r from-slate-50 dark:from-brand-dark to-transparent z-10" />
+                    <div className="absolute inset-y-0 right-0 w-20 bg-gradient-to-l from-slate-50 dark:from-brand-dark to-transparent z-10" />
+
+                    <motion.div
+                        className="flex gap-6"
+                        animate={{ x: "-50%" }}
+                        transition={{ repeat: Infinity, ease: "linear", duration: 40 }}
+                    >
+                        {[...reviews, ...reviews, ...reviews].map((review, i) => (
+                            <div
+                                key={i}
+                                className="w-80 shrink-0 bg-white dark:bg-slate-800/50 p-6 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm hover:shadow-lg transition-all"
+                            >
+                                <div className="flex items-center gap-4 mb-4">
+                                    <img src={review.img} alt={review.name} className="w-12 h-12 rounded-full object-cover ring-2 ring-brand-primary/20" />
+                                    <div>
+                                        <h4 className="font-bold text-slate-900 dark:text-white text-sm">{review.name}</h4>
+                                        <span className="text-xs text-brand-primary font-medium">{review.role}</span>
+                                    </div>
+                                </div>
+                                <div className="flex gap-1 mb-3">
+                                    {[...Array(5)].map((_, j) => (
+                                        <Star key={j} size={14} className="fill-yellow-400 text-yellow-400" />
+                                    ))}
+                                </div>
+                                <p className="text-slate-600 dark:text-slate-400 text-sm italic mb-4">"{review.text}"</p>
+                                <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-500">
+                                    <MapPin size={12} />
+                                    {review.location}
+                                </div>
+                            </div>
+                        ))}
+                    </motion.div>
+                </div>
+            </div>
+        </section>
+    );
+};
 const Footer = () => (
     <footer className="bg-slate-900 text-slate-300 py-16 px-6 relative overflow-hidden">
         {/* Decorative elements */}
@@ -248,8 +339,9 @@ const LandingPage = () => {
             <section className="relative min-h-screen flex items-center justify-center pt-20 px-6 overflow-hidden">
                 {/* Aurora Background */}
                 <div className="absolute inset-0 bg-brand-dark overflow-hidden pointer-events-none -z-10">
-                    <div className="absolute top-[-50%] left-[-50%] w-[200%] h-[200%] bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-brand-primary/20 via-brand-dark to-brand-dark animate-slow-spin opacity-50 blur-3xl" />
-                    <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-brand-accent/20 rounded-full blur-[120px] mix-blend-screen animate-float" />
+                    <div className="absolute top-[-50%] left-[-50%] w-[200%] h-[200%] bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-brand-primary/40 via-brand-dark to-brand-dark animate-slow-spin opacity-80 blur-3xl" />
+                    <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-brand-accent/30 rounded-full blur-[120px] mix-blend-screen animate-float" />
+                    <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-brand-secondary/30 rounded-full blur-[100px] mix-blend-screen animate-pulse-slow" />
                 </div>
 
                 <div className="max-w-5xl mx-auto text-center relative z-10">
@@ -300,6 +392,9 @@ const LandingPage = () => {
                 <Marquee />
             </section>
 
+            {/* User Reviews Section */}
+            <UserReviews />
+
             {/* Middle Section: Features */}
             <section className="py-24 px-6 relative">
                 <div className="max-w-7xl mx-auto">
@@ -320,23 +415,7 @@ const LandingPage = () => {
                 </div>
             </section>
 
-            {/* Call to Action */}
-            <section className="py-24 px-6 relative bg-brand-primary/5 dark:bg-brand-primary/5 overflow-hidden">
-                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-5" />
-                <div className="max-w-4xl mx-auto text-center relative z-10">
-                    <h2 className="text-4xl md:text-6xl font-bold text-slate-900 dark:text-white mb-8">
-                        Ready to orchestrate your <br /> next adventure?
-                    </h2>
-                    <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={handleStartPlanning}
-                        className="px-10 py-5 rounded-full bg-gradient-to-r from-brand-primary to-brand-accent text-white font-bold text-xl shadow-xl shadow-brand-primary/40"
-                    >
-                        Start Planning Free
-                    </motion.button>
-                </div>
-            </section>
+
 
             {/* Footer */}
             <Footer />
