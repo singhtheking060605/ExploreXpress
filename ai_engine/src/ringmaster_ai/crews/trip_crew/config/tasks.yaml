@@ -1,9 +1,148 @@
-plan_itinerary:
-  description: Create a 3-day itinerary for {topic}
-  expected_output: A detailed daily plan.
-  agent: planner
+feasibility_check:
+  description: >
+    Analyze if the requested trip is financially realistic.
+    inputs: Source: {origin}, Destination: {destination}, Budget: {budget}, Travelers: {travelers}, Days: {days}, Travel Style: {travel_style}.
 
-provide_insights:
-  description: Give 5 hidden gems for {topic}
-  expected_output: A list of 5 places with descriptions.
-  agent: local_expert
+    LOGIC:
+    1. Estimate rough travel cost per person from {origin} to {destination} (round trip).
+       - If Source == Destination, Travel Cost = 0.
+       - Assume conservative flight prices.
+    2. Subtract (Travel Cost * Travelers) from {budget}.
+    3. Divide the remaining amount by ({days} * {travelers}) to get "Daily Spend Per Person".
+    4. DECISION:
+       - IF Daily Spend < 2000 INR (or equivalent currency): FAIL.
+       - IF Daily Spend >= 2000 INR: PASS.
+  expected_output: >
+    JSON Object:
+    {
+      "is_feasible": boolean,
+      "reason": "Reason for failure or success",
+      "estimated_travel_cost": number,
+      "daily_spend_per_person": number,
+      "message": "User friendly message explanation"
+    }
+  agent: budget_guardian
+
+itinerary_planning_task:
+  description: >
+    STEP 1: Check the 'feasibility_check' output from the previous task.
+    
+    IF 'is_feasible' is false:
+      DO NOT generate any itinerary.
+      Simply return the EXACT JSON error object from the previous task.
+    
+    IF 'is_feasible' is true:
+      Research and build a feasible, rough day-by-day route for a trip to {destination} for {days} days.
+      Focus on logistics and travel times between general areas. Create a skeleton itinerary.
+      Do NOT worry about specific restaurant names or detailed costs yet.
+  expected_output: >
+    A text outline of the route with time slots OR the error JSON.
+  agent: route_planner
+  context: [feasibility_check]
+
+enrichment_task:
+  description: >
+    STEP 1: Check the 'feasibility_check' output. IF 'is_feasible' is false, RETURN THE ERROR JSON immediately.
+
+    IF feasible:
+    Take the rough route provided by the Route Planner and fill in specific, engaging activities 
+    that match the user's Travel Style: {travel_style}.
+    Use your internal knowledge to suggest highly-rated places.
+    Assume typical weather for the season.
+  expected_output: >
+    A detailed itinerary with specific place names and descriptions OR the error JSON.
+  agent: local_guide
+  context: [feasibility_check, itinerary_planning_task]
+
+hotel_task:
+  description: >
+    STEP 1: Check the 'feasibility_check' output. IF 'is_feasible' is false, RETURN THE ERROR JSON immediately.
+
+    IF feasible:
+    Search for and list at least 5 distinct accommodation options in {destination}.
+    Include a mix of ratings and price points (Budget, Mid-range, Luxury) if appropriate for the destination.
+    For each hotel, provide: Name, Address, Rating, Estimated Price, Amenities.
+  expected_output: >
+    A list of 5 hotels with details OR the error JSON.
+  agent: hotel_scout
+  context: [feasibility_check]
+
+flight_task:
+  description: >
+    STEP 1: Check the 'feasibility_check' output. IF 'is_feasible' is false, RETURN THE ERROR JSON immediately.
+
+    IF feasible:
+    Identify direct and connecting flight routes to {destination} from {origin}.
+    Provide at least 3 distinct options/airlines.
+  expected_output: >
+    A list of 3 flight options with airlines and duration OR the error JSON.
+  agent: flight_expert
+  context: [feasibility_check]
+
+budget_task:
+  description: >
+    STEP 1: Check the 'feasibility_check' output.
+    IF 'is_feasible' is false:
+      Return the EXACT JSON output from the feasibility_check task.
+      Do NOT change anything.
+
+    IF feasible:
+    Take the detailed itinerary from the Local Guide, hotel options from Hotel Scout, and flight options from Flight Expert.
+    1. Consolidate the flight options and hotel options.
+    2. Estimate costs for each activity based on typical rates in Indian Rupees (INR).
+    3. Ensure the plan fits within the total budget: {budget} INR.
+    4. Compile the FINAL JSON output matching the structure exactly.
+    5. For each activity and hotel, include a real image URL from your knowledge or search.
+    6. Coordinates MUST be [latitude, longitude] numbers.
+
+  expected_output: >
+    A strict JSON string matching the following structure (OR the error structure from feasibility_check):
+    {
+      "trip_name": "Trip to {destination}",
+      "destination": "{destination}",
+      "travel_style": "{travel_style}",
+      "total_budget_estimated": "Amount in INR",
+      "currency": "INR",
+      "flights": [
+        {
+           "route": "City A to City B",
+           "price_estimate": "Amount",
+           "duration": "Duration",
+           "airline_options": ["Airline 1", "Airline 2"]
+        }
+      ],
+      "hotels": [
+        {
+           "name": "Hotel Name",
+           "price_per_night": "Amount",
+           "rating": "4.5/5",
+           "features": ["Wifi", "Pool"],
+           "image_url": "LEAVE_EMPTY_FOR_BACKEND",
+           "coordinates": [0, 0],
+           "address": "Street Address"
+        }
+      ],
+      "itinerary": [
+        {
+           "day": 1,
+           "theme": "Arrival & Exploration",
+           "activities": [
+             {
+               "time": "10:00 AM",
+               "activity": "Activity Name",
+               "description": "Brief description",
+               "cost_estimate": "Amount",
+               "image_url": "LEAVE_EMPTY_FOR_BACKEND",
+               "coordinates": [0, 0],
+               "details": {
+                  "famous_for": "Why it is famous",
+                  "opening_hours": "09:00 - 17:00",
+                  "best_time_to_visit": "Morning"
+               }
+             }
+           ]
+        }
+      ]
+    }
+  agent: budget_guardian
+  context: [feasibility_check, enrichment_task, hotel_task, flight_task]

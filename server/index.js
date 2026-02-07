@@ -20,9 +20,7 @@ app.get("/", (req, res) => {
 app.use("/api/users", require("./routes/userRoutes"));
 app.use("/api/explore", require("./routes/exploreRoutes"));
 app.use("/api/events", require("./routes/eventsRoutes"));
-
-// Cron Job Removed as per user request
-// cron.schedule("0 0 */2 * *", () => { ... });
+app.use("/api/trips", require("./routes/tripRoutes"));
 
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);

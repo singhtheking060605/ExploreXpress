@@ -5,3 +5,8 @@ langchain
 duckduckgo-search
 python-dotenv
 requests
+crewai-tools
+langchain-google-genai
+langchain-groq
+langchain-groq
+langchain-openai

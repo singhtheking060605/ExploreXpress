@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTrip } from './TripContext';
 import PlanSidebar from './components/PlanSidebar';
-import MapComponent from './components/MapComponent';
+// import MapComponent from './components/MapComponent';
 import DestinationsStep from './components/DestinationsStep';
 import PreferencesStep from './components/PreferencesStep';
 import BudgetStep from './components/BudgetStep';
@@ -23,7 +23,7 @@ const StepContainer = ({ children }) => (
 );
 
 const PlanTrip = () => {
-    const { currentStep } = useTrip();
+    const { currentStep, markers } = useTrip();
 
     const renderStep = () => {
         switch (currentStep) {
@@ -59,10 +59,13 @@ const PlanTrip = () => {
                     </div>
                 </div>
 
-                {/* Map Section */}
-                <div className="w-[40%] h-full p-4 hidden lg:block sticky top-0">
-                    <MapComponent />
-                </div>
+                {/* Map Section Removed as per request */}
+                {/* <div className="w-[40%] h-full p-4 hidden lg:block sticky top-0">
+                    <MapComponent
+                        locations={markers}
+                        center={markers.length > 0 ? [markers[markers.length - 1].lat, markers[markers.length - 1].lng] : undefined}
+                    />
+                </div> */}
             </main>
         </div>
     );

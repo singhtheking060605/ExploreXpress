@@ -5,6 +5,7 @@ import { format } from 'date-fns';
 import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
 import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
 import mapboxgl from 'mapbox-gl';
+import MapComponent from './MapComponent';
 
 // Geocoder Component
 const GeocoderInput = ({ placeholder, onResult, defaultValue }) => {
@@ -64,7 +65,8 @@ const DestinationsStep = () => {
         fromLocation, setFromLocation,
         destinations, setDestinations,
         completeStep, goToStep,
-        addMarker, clearMarkers, removeMarker
+        addMarker, clearMarkers, removeMarker,
+        markers
     } = useTrip();
 
     const [locationInput, setLocationInput] = useState(null); // Holds object {lng, lat, name}
@@ -233,104 +235,116 @@ const DestinationsStep = () => {
     return (
         <div className="space-y-8 relative">
 
-            <div className="flex items-center gap-4 mb-2">
-                <div className="bg-green-100 p-3 rounded-xl text-green-600">
-                    <MapPin size={24} />
-                </div>
-                <div>
-                    <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Destinations</h2>
-                    <p className="text-slate-500">Select where your journey begins and where you want to go</p>
-                </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-6">
-                <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                        When does your journey begin?
-                    </label>
-                    <div className="relative">
-                        <Calendar className="absolute left-3 top-3.5 text-slate-400 z-10" size={18} />
-                        <input
-                            type="date"
-                            value={startDate || ''}
-                            onChange={(e) => setStartDate(e.target.value)}
-                            className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-brand-primary/50 transition-all outline-none"
-                        />
-                    </div>
-                </div>
-                <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                        Where are you starting from?
-                    </label>
-                    <div className="relative">
-                        {/* Wrapper for Geocoder */}
-                        <div className="geocoder-origin-wrapper">
-                            <GeocoderInput
-                                placeholder="e.g. Mumbai, India"
-                                onResult={handleSetOrigin}
-                                defaultValue={fromLocation}
-                            />
+            <div className="grid lg:grid-cols-2 gap-8 h-[calc(100vh-200px)]">
+                <div className="space-y-8 overflow-y-auto pr-2 pb-20">
+                    <div className="flex items-center gap-4 mb-2">
+                        <div className="bg-green-100 p-3 rounded-xl text-green-600">
+                            <MapPin size={24} />
+                        </div>
+                        <div>
+                            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Destinations</h2>
+                            <p className="text-slate-500">Select where your journey begins and where you want to go</p>
                         </div>
                     </div>
-                </div>
-            </div>
 
-            <div>
-                <h3 className="text-lg font-semibold text-brand-primary mb-4 flex items-center gap-2">
-                    <MapPin size={18} /> Your Destinations
-                </h3>
-
-                <div className="space-y-3">
-                    {destinations.map((dest, index) => (
-                        <div key={dest.id} className="flex items-center justify-between p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm group hover:border-brand-primary/30 transition-all">
-                            <div className="flex items-center gap-4">
-                                <div className="w-8 h-8 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-sm">
-                                    {index + 1}
-                                </div>
-                                <div>
-                                    <p className="font-semibold text-slate-800 dark:text-slate-200">{dest.city}</p>
-                                    <p className="text-xs text-slate-500 flex items-center gap-1">
-                                        <Clock size={12} /> {dest.duration} days
-                                    </p>
-                                </div>
-                            </div>
-                            <button
-                                onClick={() => handleRemoveDestination(dest.id)}
-                                className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                            >
-                                <X size={18} />
-                            </button>
-                        </div>
-                    ))}
-
-                    {/* Add Destination Form */}
-                    <div className="p-4 bg-brand-primary/5 rounded-xl border-2 border-dashed border-brand-primary/20">
-                        <div className="flex gap-4">
-                            <div className="flex-1 relative">
-                                <GeocoderInput
-                                    placeholder="Search for a city..."
-                                    onResult={setLocationInput}
-                                />
-                            </div>
-                            <div className="w-24 relative">
+                    <div className="grid grid-cols-2 gap-6">
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                                When does your journey begin?
+                            </label>
+                            <div className="relative">
+                                <Calendar className="absolute left-3 top-3.5 text-slate-400 z-10" size={18} />
                                 <input
-                                    type="number"
-                                    min="1"
-                                    value={durationInput}
-                                    onChange={(e) => setDurationInput(e.target.value)}
-                                    className="w-full pl-3 pr-8 py-3 rounded-lg border-none bg-white/80 focus:ring-2 focus:ring-brand-primary/20 text-sm text-center"
+                                    type="date"
+                                    value={startDate || ''}
+                                    onChange={(e) => setStartDate(e.target.value)}
+                                    className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-brand-primary/50 transition-all outline-none"
                                 />
-                                <span className="absolute right-3 top-3.5 text-xs text-slate-400">days</span>
                             </div>
-                            <button
-                                onClick={handleAddDestination}
-                                disabled={!locationInput}
-                                className="bg-gradient-to-r from-brand-primary to-brand-accent text-white px-6 rounded-lg font-medium shadow-lg shadow-brand-primary/20 hover:shadow-xl hover:scale-[1.02] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                                Add
-                            </button>
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                                Where are you starting from?
+                            </label>
+                            <div className="relative">
+                                {/* Wrapper for Geocoder */}
+                                <div className="geocoder-origin-wrapper">
+                                    <GeocoderInput
+                                        placeholder="e.g. Mumbai, India"
+                                        onResult={handleSetOrigin}
+                                        defaultValue={fromLocation}
+                                    />
+                                </div>
+                            </div>
                         </div>
                     </div>
+
+                    <div>
+                        <h3 className="text-lg font-semibold text-brand-primary mb-4 flex items-center gap-2">
+                            <MapPin size={18} /> Your Destinations
+                        </h3>
+
+                        <div className="space-y-3">
+                            {destinations.map((dest, index) => (
+                                <div key={dest.id} className="flex items-center justify-between p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm group hover:border-brand-primary/30 transition-all">
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-8 h-8 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-sm">
+                                            {index + 1}
+                                        </div>
+                                        <div>
+                                            <p className="font-semibold text-slate-800 dark:text-slate-200">{dest.city}</p>
+                                            <p className="text-xs text-slate-500 flex items-center gap-1">
+                                                <Clock size={12} /> {dest.duration} days
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <button
+                                        onClick={() => handleRemoveDestination(dest.id)}
+                                        className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                                    >
+                                        <X size={18} />
+                                    </button>
+                                </div>
+                            ))}
+
+                            {/* Add Destination Form */}
+                            <div className="p-4 bg-brand-primary/5 rounded-xl border-2 border-dashed border-brand-primary/20">
+                                <div className="flex gap-4">
+                                    <div className="flex-1 relative">
+                                        <GeocoderInput
+                                            placeholder="Search for a city..."
+                                            onResult={setLocationInput}
+                                        />
+                                    </div>
+                                    <div className="w-24 relative">
+                                        <input
+                                            type="number"
+                                            min="1"
+                                            value={durationInput}
+                                            onChange={(e) => setDurationInput(e.target.value)}
+                                            className="w-full pl-3 pr-8 py-3 rounded-lg border-none bg-white/80 focus:ring-2 focus:ring-brand-primary/20 text-sm text-center"
+                                        />
+                                        <span className="absolute right-3 top-3.5 text-xs text-slate-400">days</span>
+                                    </div>
+                                    <button
+                                        onClick={handleAddDestination}
+                                        disabled={!locationInput}
+                                        className="bg-gradient-to-r from-brand-primary to-brand-accent text-white px-6 rounded-lg font-medium shadow-lg shadow-brand-primary/20 hover:shadow-xl hover:scale-[1.02] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                        Add
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Map Column */}
+                <div className="hidden lg:block h-full w-full rounded-2xl overflow-hidden shadow-sm border border-slate-200 dark:border-slate-700">
+                    <MapComponent
+                        locations={markers}
+                        center={markers.length > 0 ? [markers[markers.length - 1].lat, markers[markers.length - 1].lng] : undefined}
+                    />
                 </div>
             </div>
 
