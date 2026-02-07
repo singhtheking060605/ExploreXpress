@@ -2,6 +2,9 @@ const express = require("express");
 const dotenv = require("dotenv").config();
 const cors = require("cors");
 const dbConnect = require("./config/dbConnect");
+const cron = require('node-cron');
+const { exec } = require('child_process');
+const path = require('path');
 
 dbConnect();
 const app = express();
@@ -15,6 +18,11 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/users", require("./routes/userRoutes"));
+app.use("/api/explore", require("./routes/exploreRoutes"));
+app.use("/api/events", require("./routes/eventsRoutes"));
+
+// Cron Job Removed as per user request
+// cron.schedule("0 0 */2 * *", () => { ... });
 
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);

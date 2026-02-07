@@ -1,0 +1,47 @@
+generate_trends_task:
+  description: >
+    Generate a hierarchical JSON list of 60 unique travel destinations.
+    Structure:
+    - Region: "India" or "World"
+    - Category: "Mountains", "Beach", "Adventure", "Spiritual", "Culture"
+    - List: 6 unique cities per category.
+    
+    CRITICAL CONSTRAINTS:
+    1. EXCLUDE all Tier-1 clichés (e.g., NO Goa, Manali, Jaipur, Rishikesh, Bali, Paris, Dubai, NYC).
+    2. Focus on Tier-2 and Tier-3 gems (e.g., Kalimpong, Gokarna, Tarkarli, Pehalgam, Hampi, Ziro).
+    3. Output MUST be valid JSON only. No markdown formatting.
+  expected_output: >
+    A raw JSON object with the structure:
+    {
+      "India": {
+        "Mountains": ["City1", "City2", ...],
+        "Beach": ["City1", ...],
+        ...
+      },
+      "World": {
+        "Mountains": ["City1", ...],
+        ...
+      }
+    }
+  agent: trend_spotter
+
+enrich_city_task:
+  description: >
+    Research the following city: {city} ({region}, {category}).
+    Find 5-8 REAL, confirmed upcoming events (festivals, concerts, cultural events) with specific dates and booking links if available.
+    Also provide:
+    - "famous_for": A short snippet (max 15 words) on what it's known for.
+    - "trending_reason": Why it's a hot destination right now.
+  expected_output: >
+    A JSON object for the city with the following fields:
+    - destination: "{city}"
+    - region: "{region}"
+    - category: "{category}"
+    - famous_for: "..."
+    - trending_reason: "..."
+    - events: [
+        { "name": "Event Name", "date": "YYYY-MM-DD", "type": "Festival/Concert/etc", "bookingLink": "url or null" },
+        ...
+      ]
+    - imageUrl: "URL to a high-quality representational image (use a placeholder if real one not found)"
+  agent: event_hunter

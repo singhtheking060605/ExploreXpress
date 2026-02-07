@@ -101,6 +101,75 @@ const DestinationsStep = () => {
         return () => document.head.removeChild(style);
     }, []);
 
+    // Check for destination in URL query params
+    useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        const destinationParam = params.get('destination');
+
+        if (destinationParam && destinations.length === 0) {
+
+            const geocodeDestination = async () => {
+                try {
+                    const token = import.meta.env.VITE_MAPBOX_TOKEN;
+                    const res = await fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(destinationParam)}.json?access_token=${token}&limit=1`);
+                    const data = await res.json();
+
+                    let lng = 0;
+                    let lat = 0;
+                    let fullName = destinationParam;
+
+                    if (data.features && data.features.length > 0) {
+                        const feature = data.features[0];
+                        lng = feature.center[0];
+                        lat = feature.center[1];
+                        fullName = feature.place_name;
+                    }
+
+                    const newDest = {
+                        id: Date.now(),
+                        city: destinationParam.split(',')[0], // Just city name for display
+                        fullName: fullName,
+                        duration: '3',
+                        lng: lng,
+                        lat: lat
+                    };
+
+                    setDestinations([newDest]);
+
+                    // Add marker immediately if we have coords
+                    if (lng !== 0 && lat !== 0) {
+                        addMarker({
+                            id: newDest.id,
+                            lng: lng,
+                            lat: lat,
+                            type: 'destination',
+                            label: '1',
+                            name: newDest.city
+                        });
+                    }
+
+                } catch (err) {
+                    console.error("Failed to geocode initial destination:", err);
+                    // Fallback to adding without coords
+                    setDestinations([{
+                        id: Date.now(),
+                        city: destinationParam,
+                        fullName: destinationParam,
+                        duration: '3',
+                        lng: 0,
+                        lat: 0
+                    }]);
+                }
+            };
+
+            geocodeDestination();
+
+            // Cleanup param
+            const newUrl = window.location.pathname;
+            window.history.replaceState({}, '', newUrl);
+        }
+    }, []);
+
 
     const handleAddDestination = () => {
         if (!locationInput) return;

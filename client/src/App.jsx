@@ -33,13 +33,7 @@ function App() {
         {/* Protected Routes */}
         <Route element={<ProtectedRoute />}>
           {/* Default After Login Redirect to Explore or Dashboard? User said Explore is the page when user logs in */}
-          {/* Assuming LandingPage redirects to /explore if logged in, otherwise accessible. 
-              But here user asked 'Explore page this is the page which will open when user log ins'. 
-              Currently '/' is LandingPage. I'll keep '/' as Landing, but add '/explore' and '/plan'.
-          */}
-
           <Route path="/explore" element={<AppLayout><Explore /></AppLayout>} />
-
 
           {/* Dashboard is now the user's trips page */}
           <Route path="/dashboard" element={<AppLayout><Dashboard /></AppLayout>} />

@@ -1,0 +1,30 @@
+[BUG REPORT]
+Issue: Duplicate Destinations in Explore Page
+Date: 2026-02-08
+Status: FIXED
+
+[CAUSE]
+The issue was not a runtime error, but intentional logic within the seeding script (`server/seed_explore.js`) designed to populate the UI for testing purposes.
+
+Original Code Snippet (The Culprit):
+const sampleData = [
+    ...baseDestinations,
+    // The following lines created copies of every destination with Roman numeral suffixes
+    ...baseDestinations.map(d => ({ ...d, destination: d.destination + " II", category: "Adventure" })),
+    ...baseDestinations.map(d => ({ ...d, destination: d.destination + " III", category: "Spiritual" })),
+    ...baseDestinations.map(d => ({ ...d, destination: d.destination + " IV", category: "Mountains" })),
+    ...baseDestinations.map(d => ({ ...d, destination: d.destination + " V", category: "Beach" })),
+    ...baseDestinations.map(d => ({ ...d, destination: d.destination + " VI", category: "Culture" }))
+];
+
+This loop took the original authentic destinations (like "Goa", "Jaipur") and multiplied them 5 times, appending " II", " III", " IV", etc., and arbitrarily assigning them different categories (like putting Jaipur in "Mountains").
+
+[RESOLUTION]
+1. Removed the duplication logic entirely.
+2. Replaced `sampleData` with a manually curated list of unique, rich destinations for every category.
+3. Updated the database aggregation logic to strictly group by unique destination names to prevent future duplication.
+
+[RESULT]
+- No more "Goa IV" or "Jaipur V".
+- "Jaipur" is correctly categorized as Culture, not Mountains.
+- All data on the Explore page is now unique and authentically categorized.
