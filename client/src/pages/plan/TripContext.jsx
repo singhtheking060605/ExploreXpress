@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useMemo } from 'react';
+import api from '../../services/api';
 
 const TripContext = createContext();
 
@@ -64,6 +65,35 @@ export const TripProvider = ({ children }) => {
         }
     };
 
+    // Generate Trip Plan
+    const [generatedTrip, setGeneratedTrip] = useState(null);
+    const [isGenerating, setIsGenerating] = useState(false);
+    const [generationError, setGenerationError] = useState(null);
+
+    const generateTripPlan = async (forceRefresh = false) => {
+        setIsGenerating(true);
+        setGenerationError(null);
+        try {
+            // Prepare payload
+            const payload = {
+                destination: destinations[0]?.city || "Paris", // Default fallback
+                days: destinations[0]?.duration || 3,
+                budget: maxBudget,
+                travel_style: travelType,
+                forceRefresh
+            };
+
+            const response = await api.post('/trips', payload);
+            setGeneratedTrip(response.data);
+            return response.data;
+        } catch (error) {
+            console.error("Trip Generation Error:", error);
+            setGenerationError(error.response?.data?.error || "Failed to generate trip");
+        } finally {
+            setIsGenerating(false);
+        }
+    };
+
     const value = useMemo(() => ({
         currentStep,
         setCurrentStep,
@@ -83,12 +113,19 @@ export const TripProvider = ({ children }) => {
         maxBudget, setMaxBudget,
         allocation, setAllocation,
         markers, setMarkers,
-        addMarker, clearMarkers, removeMarker
+        addMarker, clearMarkers, removeMarker,
+
+        // AI Generation
+        generatedTrip,
+        isGenerating,
+        generationError,
+        generateTripPlan
     }), [
         currentStep, completedSteps,
         startDate, fromLocation, destinations,
         travelers, travelType,
-        isCapped, maxBudget, allocation
+        isCapped, maxBudget, allocation,
+        generatedTrip, isGenerating, generationError
     ]);
 
     return (

@@ -10,31 +10,68 @@ const ResultsStep = () => {
         travelers,
         travelType,
         maxBudget,
-        allocation
+        allocation,
+        generatedTrip,
+        isGenerating,
+        generationError,
+        generateTripPlan
     } = useTrip();
 
-    const [isLoading, setIsLoading] = useState(true);
-
     useEffect(() => {
-        // Simulate API generation delay
-        const timer = setTimeout(() => {
-            setIsLoading(false);
-        }, 2000);
-        return () => clearTimeout(timer);
+        if (!generatedTrip && !isGenerating && !generationError) {
+            generateTripPlan();
+        }
     }, []);
 
     const totalDuration = destinations.reduce((acc, dest) => acc + parseInt(dest.duration || 0), 0);
 
     const endDate = startDate ? new Date(new Date(startDate).getTime() + (totalDuration * 24 * 60 * 60 * 1000)) : new Date();
 
-    if (isLoading) {
+    if (isGenerating) {
         return (
             <div className="flex flex-col items-center justify-center p-12 h-96">
                 <div className="w-16 h-16 border-4 border-brand-primary border-t-transparent rounded-full animate-spin mb-6"></div>
                 <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Generating your perfect trip...</h3>
-                <p className="text-slate-500">We are crafting an itinerary based on your preferences</p>
+                <p className="text-slate-500">We are crafting an itinerary based on your preferences. This may take up to a minute.</p>
             </div>
         );
+    }
+
+    if (generationError) {
+        return (
+            <div className="flex flex-col items-center justify-center p-12 h-96">
+                <div className="w-16 h-16 bg-red-100 text-red-500 rounded-full flex items-center justify-center mb-6">
+                    <span className="text-3xl">⚠️</span>
+                </div>
+                <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Something went wrong</h3>
+                <p className="text-slate-500 mb-6">{generationError}</p>
+                <button
+                    onClick={() => generateTripPlan(true)}
+                    className="px-6 py-2 bg-brand-primary text-white rounded-lg hover:bg-brand-primary/90"
+                >
+                    Try Again
+                </button>
+            </div>
+        );
+    }
+
+    // Check if we have valid data
+    const itineraryData = generatedTrip?.itinerary || [];
+    const tripName = generatedTrip?.trip_name || `Trip to ${destinations[0]?.city}`;
+
+    // Fallback if itinerary is empty but successful?
+    if (!itineraryData.length) {
+        return (
+            <div className="flex flex-col items-center justify-center p-12">
+                <p>No itinerary generated. Please try again.</p>
+                <button
+                    onClick={() => generateTripPlan(true)}
+                    className="mt-4 px-6 py-2 bg-brand-primary text-white rounded-lg"
+                >
+                    Retry
+                </button>
+            </div>
+        )
     }
 
     return (
@@ -43,11 +80,11 @@ const ResultsStep = () => {
                 <div>
                     <div className="flex items-center gap-2 mb-2">
                         <div className="bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide flex items-center gap-1">
-                            <CheckCircle size={12} /> Trip Ready
+                            <CheckCircle size={12} /> Trip Ready {generatedTrip.source === 'cache' && '(Cached)'}
                         </div>
                     </div>
                     <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
-                        Your {travelType} Trip to {destinations[0]?.city.split(',')[0]}
+                        {tripName}
                     </h2>
                     <p className="text-slate-500 flex items-center gap-4 text-sm">
                         <span className="flex items-center gap-1"><Calendar size={14} /> {startDate ? format(new Date(startDate), 'MMM dd') : ''} - {format(endDate, 'MMM dd, yyyy')}</span>
@@ -67,6 +104,14 @@ const ResultsStep = () => {
                     <button className="p-2 text-slate-400 hover:text-brand-primary bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-sm transition-colors">
                         <Download size={20} />
                     </button>
+                    {/* Regenerate Button */}
+                    <button
+                        onClick={() => generateTripPlan(true)}
+                        className="p-2 text-slate-400 hover:text-brand-primary bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-sm transition-colors"
+                        title="Regenerate Trip"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-refresh-cw"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" /><path d="M21 3v5h-5" /><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" /><path d="M3 21v-5h5" /></svg>
+                    </button>
                 </div>
             </div>
 
@@ -84,43 +129,39 @@ const ResultsStep = () => {
                                 />
                                 <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6">
                                     <h3 className="text-2xl font-bold text-white">{dest.city}</h3>
-                                    <p className="text-white/80 text-sm">{dest.duration} days • 5 Activities planned</p>
+                                    <p className="text-white/80 text-sm">{dest.duration} days • {itineraryData.length} Activities planned</p>
                                 </div>
                             </div>
 
                             <div className="p-6 space-y-6">
-                                {/* Day by Day placeholder */}
-                                {Array.from({ length: Math.min(3, parseInt(dest.duration)) }).map((_, dayIndex) => (
+                                {/* Iterate through AI generated days */}
+                                {itineraryData.map((dayPlan, dayIndex) => (
                                     <div key={dayIndex} className="relative pl-8 border-l-2 border-slate-200 dark:border-slate-700 pb-6 last:pb-0 font-sans">
                                         <div className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-brand-primary border-4 border-white dark:border-slate-800" />
-                                        <h4 className="font-bold text-slate-900 dark:text-white mb-2">Day {dayIndex + 1}: City Exploration</h4>
+                                        <h4 className="font-bold text-slate-900 dark:text-white mb-2">Day {dayPlan.day}: {dayPlan.theme}</h4>
                                         <div className="space-y-3">
-                                            <div className="bg-slate-50 dark:bg-slate-900/50 p-3 rounded-xl flex gap-3 text-sm">
-                                                <div className="w-16 h-16 rounded-lg bg-slate-200 flex-shrink-0 overflow-hidden">
-                                                    <img src={`https://source.unsplash.com/100x100/?landmark,${dayIndex}`} className="w-full h-full object-cover" alt="" />
+                                            {dayPlan.activities.map((activity, actIndex) => (
+                                                <div key={actIndex} className="bg-slate-50 dark:bg-slate-900/50 p-3 rounded-xl flex gap-3 text-sm">
+                                                    <div className="w-16 h-16 rounded-lg bg-slate-200 flex-shrink-0 overflow-hidden">
+                                                        <img src={`https://source.unsplash.com/100x100/?${activity.activity}`} className="w-full h-full object-cover" alt=""
+                                                            onError={(e) => e.target.src = `https://source.unsplash.com/100x100/?travel`}
+                                                        />
+                                                    </div>
+                                                    <div className="flex-1">
+                                                        <div className="flex justify-between items-start">
+                                                            <div className="font-semibold text-slate-800 dark:text-slate-200">{activity.activity}</div>
+                                                            <span className="text-xs font-mono bg-slate-200 dark:bg-slate-800 px-2 py-0.5 rounded text-slate-600 dark:text-slate-400">{activity.time}</span>
+                                                        </div>
+                                                        <p className="text-slate-500 text-xs mt-1">{activity.description}</p>
+                                                        <div className="mt-2 text-xs font-medium text-emerald-600 dark:text-emerald-400">
+                                                            Est. Cost: {activity.cost_estimate}
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                <div>
-                                                    <div className="font-semibold text-slate-800 dark:text-slate-200">Morning Visit</div>
-                                                    <p className="text-slate-500 text-xs mt-1">Visit the famous landmarks to start your day with energy and culture.</p>
-                                                </div>
-                                            </div>
-                                            <div className="bg-slate-50 dark:bg-slate-900/50 p-3 rounded-xl flex gap-3 text-sm">
-                                                <div className="w-16 h-16 rounded-lg bg-slate-200 flex-shrink-0 overflow-hidden">
-                                                    <img src={`https://source.unsplash.com/100x100/?food,${dayIndex}`} className="w-full h-full object-cover" alt="" />
-                                                </div>
-                                                <div>
-                                                    <div className="font-semibold text-slate-800 dark:text-slate-200">Local Cuisine Lunch</div>
-                                                    <p className="text-slate-500 text-xs mt-1">Enjoy authentic local dishes at a top-rated restaurant nearby.</p>
-                                                </div>
-                                            </div>
+                                            ))}
                                         </div>
                                     </div>
                                 ))}
-                                {parseInt(dest.duration) > 3 && (
-                                    <button className="w-full py-2 text-center text-brand-primary text-sm font-medium hover:bg-brand-primary/5 rounded-lg transition-colors">
-                                        View {parseInt(dest.duration) - 3} more days
-                                    </button>
-                                )}
                             </div>
                         </div>
                     ))}

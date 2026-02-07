@@ -1,9 +1,59 @@
-plan_itinerary:
-  description: Create a 3-day itinerary for {topic}
-  expected_output: A detailed daily plan.
-  agent: planner
+itinerary_planning_task:
+  description: >
+    Research and build a feasible, rough day-by-day route for a trip to {destination} for {days} days.
+    Focus on logistics and travel times between general areas. Create a skeleton itinerary.
+    Do NOT worry about specific restaurant names or detailed costs yet.
+  expected_output: >
+    A text outline of the route with time slots.
+  agent: route_planner
 
-provide_insights:
-  description: Give 5 hidden gems for {topic}
-  expected_output: A list of 5 places with descriptions.
-  agent: local_expert
+enrichment_task:
+  description: >
+    Take the rough route provided by the Route Planner and fill in specific, engaging activities 
+    that match the user's Travel Style: {travel_style}.
+    Use your internal knowledge to suggest highly-rated places.
+    Assume typical weather for the season.
+  expected_output: >
+    A detailed itinerary with specific place names and descriptions.
+  agent: local_guide
+  context: [itinerary_planning_task]
+
+budget_task:
+  description: >
+    Take the detailed itinerary from the Local Guide.
+    1. Estimate costs for flight (generic), hotels (suggest options), and each activity based on typical rates.
+    2. Ensure the plan fits within the total budget: {budget}.
+    3. Compile the FINAL JSON output matching the structure exactly.
+  expected_output: >
+    A strict JSON string matching the following structure:
+    {
+      "trip_name": "Trip to {destination}",
+      "destination": "{destination}",
+      "travel_style": "{travel_style}",
+      "total_budget_estimated": "Amount in currency",
+      "currency": "USD or local",
+      "hotel_suggestions": [
+        {
+           "name": "Hotel Name",
+           "price_per_night": "Amount",
+           "rating": "4.5/5",
+           "features": ["Wifi", "Pool"]
+        }
+      ],
+      "itinerary": [
+        {
+          "day": 1,
+          "theme": "Arrival & Exploration",
+          "activities": [
+             {
+               "time": "10:00 AM",
+               "activity": "Activity Name",
+               "description": "Brief description",
+               "cost_estimate": "Amount"
+             }
+          ]
+        }
+      ]
+    }
+  agent: budget_guardian
+  context: [enrichment_task]
