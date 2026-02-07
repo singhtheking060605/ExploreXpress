@@ -144,7 +144,7 @@ const BudgetStep = () => {
             <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-4">
                     <div className="bg-emerald-100 p-3 rounded-xl text-emerald-600">
-                        <DollarSign size={24} />
+                        <div className="text-2xl font-bold text-emerald-600">₹</div>
                     </div>
                     <div>
                         <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Set Your Budget</h2>
@@ -183,22 +183,22 @@ const BudgetStep = () => {
             <div className="bg-white dark:bg-slate-800 p-8 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
                 <div className="flex justify-between items-center mb-8">
                     <h3 className="text-xl font-bold text-slate-900 dark:text-white">Maximum Budget</h3>
-                    <span className="text-3xl font-bold text-emerald-500">${maxBudget.toLocaleString()}</span>
+                    <span className="text-3xl font-bold text-emerald-500">₹{maxBudget.toLocaleString('en-IN')}</span>
                 </div>
 
                 <input
                     type="range"
-                    min="1000"
-                    max="100000"
+                    min="5000"
+                    max="1000000"
                     step="500"
                     value={maxBudget}
                     onChange={(e) => setMaxBudget(parseInt(e.target.value))}
                     className="w-full h-3 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500"
                 />
                 <div className="flex justify-between mt-2 text-xs text-slate-400 font-medium">
-                    <span>$1,000</span>
+                    <span>₹5,000</span>
                     <span className="bg-slate-100 dark:bg-slate-700 px-3 py-1 rounded-full">Set your maximum budget limit</span>
-                    <span>$100,000</span>
+                    <span>₹10,00,000</span>
                 </div>
             </div>
 
@@ -228,7 +228,7 @@ const BudgetStep = () => {
                             </div>
                             <div className="text-right">
                                 <div className="text-2xl font-bold text-blue-600">{allocation.travel}%</div>
-                                <div className="text-xs text-slate-500">${Math.round(maxBudget * (allocation.travel / 100)).toLocaleString()}</div>
+                                <div className="text-xs text-slate-500">₹{Math.round(maxBudget * (allocation.travel / 100)).toLocaleString('en-IN')}</div>
                             </div>
                         </div>
                         <input
@@ -253,7 +253,7 @@ const BudgetStep = () => {
                             </div>
                             <div className="text-right">
                                 <div className="text-2xl font-bold text-green-600">{allocation.accommodation}%</div>
-                                <div className="text-xs text-slate-500">${Math.round(maxBudget * (allocation.accommodation / 100)).toLocaleString()}</div>
+                                <div className="text-xs text-slate-500">₹{Math.round(maxBudget * (allocation.accommodation / 100)).toLocaleString('en-IN')}</div>
                             </div>
                         </div>
                         <input
@@ -278,7 +278,7 @@ const BudgetStep = () => {
                             </div>
                             <div className="text-right">
                                 <div className="text-2xl font-bold text-orange-600">{allocation.food}%</div>
-                                <div className="text-xs text-slate-500">${Math.round(maxBudget * (allocation.food / 100)).toLocaleString()}</div>
+                                <div className="text-xs text-slate-500">₹{Math.round(maxBudget * (allocation.food / 100)).toLocaleString('en-IN')}</div>
                             </div>
                         </div>
                         <input
@@ -303,7 +303,7 @@ const BudgetStep = () => {
                             </div>
                             <div className="text-right">
                                 <div className="text-2xl font-bold text-purple-600">{allocation.activities}%</div>
-                                <div className="text-xs text-slate-500">${Math.round(maxBudget * (allocation.activities / 100)).toLocaleString()}</div>
+                                <div className="text-xs text-slate-500">₹{Math.round(maxBudget * (allocation.activities / 100)).toLocaleString('en-IN')}</div>
                             </div>
                         </div>
                         <input
@@ -323,19 +323,19 @@ const BudgetStep = () => {
                         <h4 className="font-bold text-slate-900 dark:text-white mb-1">Budget Allocation Summary</h4>
                         <div className="flex gap-8 text-sm mt-3">
                             <div className="text-center">
-                                <div className="font-bold text-blue-600 text-lg">${Math.round(maxBudget * (allocation.travel / 100)).toLocaleString()}</div>
+                                <div className="font-bold text-blue-600 text-lg">₹{Math.round(maxBudget * (allocation.travel / 100)).toLocaleString('en-IN')}</div>
                                 <div className="text-xs text-slate-500">Travel</div>
                             </div>
                             <div className="text-center">
-                                <div className="font-bold text-green-600 text-lg">${Math.round(maxBudget * (allocation.accommodation / 100)).toLocaleString()}</div>
+                                <div className="font-bold text-green-600 text-lg">₹{Math.round(maxBudget * (allocation.accommodation / 100)).toLocaleString('en-IN')}</div>
                                 <div className="text-xs text-slate-500">Accommodation</div>
                             </div>
                             <div className="text-center">
-                                <div className="font-bold text-orange-600 text-lg">${Math.round(maxBudget * (allocation.food / 100)).toLocaleString()}</div>
+                                <div className="font-bold text-orange-600 text-lg">₹{Math.round(maxBudget * (allocation.food / 100)).toLocaleString('en-IN')}</div>
                                 <div className="text-xs text-slate-500">Food & Dining</div>
                             </div>
                             <div className="text-center">
-                                <div className="font-bold text-purple-600 text-lg">${Math.round(maxBudget * (allocation.activities / 100)).toLocaleString()}</div>
+                                <div className="font-bold text-purple-600 text-lg">₹{Math.round(maxBudget * (allocation.activities / 100)).toLocaleString('en-IN')}</div>
                                 <div className="text-xs text-slate-500">Events & Activities</div>
                             </div>
                         </div>

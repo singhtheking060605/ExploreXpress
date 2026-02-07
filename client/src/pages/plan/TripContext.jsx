@@ -76,9 +76,14 @@ export const TripProvider = ({ children }) => {
         try {
             // Prepare payload
             const payload = {
-                destination: destinations[0]?.city || "Paris", // Default fallback
-                days: destinations[0]?.duration || 3,
+                // Send all destinations as a comma-separated string for now, or array if backend supports it.
+                // Based on main.py TripRequest, it expects 'destination' as str.
+                // So we join them.
+                destination: destinations.map(d => d.city).join(', ') || "Paris",
+                origin: fromLocation || "New York",
+                days: destinations.map(d => d.duration).reduce((a, b) => parseInt(a) + parseInt(b), 0) || 3, // Total days
                 budget: maxBudget,
+                travelers: travelers, // Add travelers count
                 travel_style: travelType,
                 forceRefresh
             };

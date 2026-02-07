@@ -16,6 +16,10 @@ const tripSchema = mongoose.Schema(
             type: String,
             required: true,
         },
+        origin: {
+            type: String,
+            required: true, // Now required as per frontend/AI changes
+        },
         duration: {
             type: Number,
             required: true,

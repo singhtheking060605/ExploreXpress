@@ -19,14 +19,15 @@ const generateSearchHash = (destination, days, budget, travelStyle) => {
 // @access  Public (or Private if using auth)
 const createTripPlan = async (req, res) => {
     try {
-        const { destination, days, budget, travel_style, user_id, forceRefresh } = req.body;
+        const { destination, origin, days, budget, travelers, travel_style, user_id, forceRefresh } = req.body;
 
-        if (!destination || !days || !budget) {
-            return res.status(400).json({ error: "Missing required fields: destination, days, budget" });
+        if (!destination || !origin || !days || !budget) {
+            return res.status(400).json({ error: "Missing required fields: destination, origin, days, budget" });
         }
 
         // 1. Generate Hash
-        const searchHash = generateSearchHash(destination, days, budget, travel_style);
+        // Include travelers in hash to distinguish differently sized groups
+        const searchHash = generateSearchHash(destination + origin + (travelers || 1), days, budget, travel_style);
 
         // 2. Check Cache (if not forced refresh)
         if (!forceRefresh) {
@@ -39,7 +40,7 @@ const createTripPlan = async (req, res) => {
             }).sort({ createdAt: -1 }); // Get the latest one
 
             if (cachedTrip) {
-                console.log(`[CACHE HIT] Retrieving trip for ${destination} (${days} days)`);
+                console.log(`[CACHE HIT] Retrieving trip for ${destination} from ${origin} (${days} days)`);
                 // Return cached data
                 return res.json({
                     ...cachedTrip.tripData,
@@ -49,14 +50,16 @@ const createTripPlan = async (req, res) => {
             }
         }
 
-        console.log(`[CACHE MISS] Calling AI Engine for ${destination} (${days} days)...`);
+        console.log(`[CACHE MISS] Calling AI Engine for ${destination} from ${origin} (${days} days, ${travelers} travelers)...`);
 
         // 3. Call AI Engine
         // Construct the query object expected by the Python backend
         const aiPayload = {
             destination,
+            origin,
             days: days.toString(),
             budget: budget.toString(),
+            travelers: (travelers || 1).toString(),
             travel_style: travel_style || "Leisure",
             current_date: new Date().toISOString().split('T')[0]
         };
@@ -76,13 +79,95 @@ const createTripPlan = async (req, res) => {
         // Let's proceed with `/plan-trip` and pass the inputs.
         const aiResponse = await axios.post("http://localhost:8000/plan-trip", aiPayload);
 
-        const tripData = aiResponse.data;
+        let tripData = aiResponse.data;
+
+        // CHECK FOR FEASIBILITY ERROR
+        if (tripData.is_feasible === false) {
+            console.log(`[FEASIBILITY CHECK] Trip rejected by AI: ${tripData.message}`);
+            // Use 400 Bad Request to indicate client error (low budget)
+            // The frontend should handle this and show the message
+            return res.status(400).json({
+                error: tripData.message || tripData.reason,
+                details: tripData
+            });
+        }
+
+        // Fallback for previous error method (Backwards compatibility)
+        if (tripData.error === "BudgetInsufficient") {
+            console.log(`[FEASIBILITY CHECK] Trip rejected by AI: ${tripData.message}`);
+            return res.status(400).json({ error: tripData.message });
+        }
+
+        // --- ENRICHMENT STEP (Images & Coordinates) ---
+        console.log(`[ENRICHMENT] Fetching images for ${destination}...`);
+
+        // Helper to fetch image from Serper
+        const fetchImage = async (query) => {
+            try {
+                const apiKey = process.env.SERPER_API_KEY;
+                if (!apiKey) return "";
+
+                const response = await axios.post("https://google.serper.dev/images", {
+                    q: query,
+                    num: 1
+                }, {
+                    headers: {
+                        'X-API-KEY': apiKey,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.data.images && response.data.images.length > 0) {
+                    return response.data.images[0].imageUrl;
+                }
+                return "";
+            } catch (err) {
+                console.warn(`[ENRICHMENT] Failed to fetch image for ${query}:`, err.message);
+                return "";
+            }
+        };
+
+        // Collect all promises for parallel execution
+        const enrichmentPromises = [];
+
+        // 1. Hotels
+        if (tripData.hotels && Array.isArray(tripData.hotels)) {
+            tripData.hotels.forEach(hotel => {
+                if (!hotel.image_url || hotel.image_url === "" || hotel.image_url === "LEAVE_EMPTY_FOR_BACKEND") {
+                    const query = `${hotel.name} ${destination} hotel typical room`;
+                    enrichmentPromises.push(
+                        fetchImage(query).then(url => { hotel.image_url = url; })
+                    );
+                }
+            });
+        }
+
+        // 2. Itinerary Activities
+        if (tripData.itinerary && Array.isArray(tripData.itinerary)) {
+            tripData.itinerary.forEach(dayPlan => {
+                if (dayPlan.activities && Array.isArray(dayPlan.activities)) {
+                    dayPlan.activities.forEach(activity => {
+                        if (!activity.image_url || activity.image_url === "" || activity.image_url === "LEAVE_EMPTY_FOR_BACKEND") {
+                            const query = `${activity.activity} ${destination}`;
+                            enrichmentPromises.push(
+                                fetchImage(query).then(url => { activity.image_url = url; })
+                            );
+                        }
+                    });
+                }
+            });
+        }
+
+        // Wait for all images to be fetched
+        await Promise.all(enrichmentPromises);
+        console.log(`[ENRICHMENT] Completed. ${enrichmentPromises.length} images fetched.`);
 
         // 4. Save to Database
         const newTrip = await Trip.create({
             user_id: user_id || null,
             searchHash,
             destination,
+            origin,
             duration: days,
             budget: budget.toString(),
             tripData: tripData,

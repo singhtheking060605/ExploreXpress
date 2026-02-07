@@ -41,7 +41,7 @@ const registerUser = asyncHandler(async (req, res) => {
                 },
             },
             process.env.JWT_SECRET,
-            { expiresIn: "15m" }
+            { expiresIn: "30d" }
         );
         res.status(201).json({ accessToken, _id: user.id, email: user.email });
     } else {
@@ -71,7 +71,7 @@ const loginUser = asyncHandler(async (req, res) => {
                 },
             },
             process.env.JWT_SECRET,
-            { expiresIn: "15m" }
+            { expiresIn: "30d" }
         );
         res.status(200).json({ accessToken });
     } else {
@@ -111,7 +111,7 @@ const googleLogin = asyncHandler(async (req, res) => {
             },
         },
         process.env.JWT_SECRET,
-        { expiresIn: "15m" }
+        { expiresIn: "30d" }
     );
 
     res.status(200).json({ accessToken, user });

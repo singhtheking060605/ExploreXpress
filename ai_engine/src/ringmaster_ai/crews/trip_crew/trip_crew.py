@@ -60,6 +60,8 @@ class TripCrew():
 
         # Assign unique keys
         key_route = get_agent_key(1)
+        key_hotel = get_agent_key(2)
+        key_flight = get_agent_key(5)
         key_guide = get_agent_key(4) # User requested explicit switch to Key 4
         key_budget = get_agent_key(3)
         
@@ -69,6 +71,18 @@ class TripCrew():
             api_key=key_route
         )
         
+        # Hotel Scout LLM
+        self.llm_hotel_scout = LLM(
+            model="groq/llama-3.3-70b-versatile",
+            api_key=key_hotel
+        )
+
+        # Flight Expert LLM
+        self.llm_flight_expert = LLM(
+            model="groq/llama-3.3-70b-versatile",
+            api_key=key_flight
+        )
+
         # Local Guide LLM
         self.llm_local_guide = LLM(
             model="groq/llama-3.3-70b-versatile",
@@ -94,48 +108,101 @@ class TripCrew():
     def local_guide(self) -> Agent:
         return Agent(
             config=self.agents_config['local_guide'],
-            # Tools disabled for stability with Groq
             verbose=True,
             allow_delegation=False,
+            # Tools disabled for stability with Groq
             llm=self.llm_local_guide
+        )
+
+    @agent
+    def hotel_scout(self) -> Agent:
+        return Agent(
+            config=self.agents_config['hotel_scout'],
+            verbose=True,
+            allow_delegation=False,
+            llm=self.llm_hotel_scout
+        )
+
+    @agent
+    def flight_expert(self) -> Agent:
+        return Agent(
+            config=self.agents_config['flight_expert'],
+            verbose=True,
+            allow_delegation=False,
+            llm=self.llm_flight_expert
         )
 
     @agent
     def budget_guardian(self) -> Agent:
         return Agent(
             config=self.agents_config['budget_guardian'],
-            # Tools disabled for stability with Groq
             verbose=True,
             allow_delegation=False,
+            # Tools disabled for stability with Groq
             llm=self.llm_budget_guardian
+        )
+
+    @task
+    def feasibility_check(self) -> Task:
+        return Task(
+            config=self.tasks_config['feasibility_check']
         )
 
     @task
     def itinerary_planning_task(self) -> Task:
         return Task(
-            config=self.tasks_config['itinerary_planning_task']
+            config=self.tasks_config['itinerary_planning_task'],
+            context=[self.feasibility_check()]
         )
 
     @task
     def enrichment_task(self) -> Task:
         return Task(
             config=self.tasks_config['enrichment_task'],
-            context=[self.itinerary_planning_task()]
+            context=[self.feasibility_check(), self.itinerary_planning_task()]
+        )
+
+    @task
+    def hotel_task(self) -> Task:
+        return Task(
+            config=self.tasks_config['hotel_task'],
+            context=[self.feasibility_check()]
+        )
+
+    @task
+    def flight_task(self) -> Task:
+        return Task(
+            config=self.tasks_config['flight_task'],
+            context=[self.feasibility_check()]
         )
 
     @task
     def budget_task(self) -> Task:
         return Task(
             config=self.tasks_config['budget_task'],
-            context=[self.enrichment_task()],
+            context=[self.feasibility_check(), self.enrichment_task(), self.hotel_task(), self.flight_task()],
             output_file='itinerary.json'
         )
 
     @crew
     def crew(self) -> Crew:
         return Crew(
-            agents=self.agents,
-            tasks=self.tasks,
+            agents=[
+                self.budget_guardian(), # Runs feasibility check context first
+                self.route_planner(),
+                self.local_guide(),
+                self.hotel_scout(),
+                self.flight_expert(),
+                self.budget_guardian() # Runs budget task last
+            ],
+            tasks=[
+                self.feasibility_check(),
+                self.itinerary_planning_task(),
+                self.enrichment_task(),
+                self.hotel_task(),
+                self.flight_task(),
+                self.budget_task()
+            ],
             process=Process.sequential,
             verbose=True
         )
