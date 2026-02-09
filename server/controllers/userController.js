@@ -2,6 +2,7 @@ const asyncHandler = require("express-async-handler");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/userModel");
+const Trip = require("../models/Trip"); // Import Trip model
 const { OAuth2Client } = require("google-auth-library");
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
@@ -124,4 +125,58 @@ const currentUser = asyncHandler(async (req, res) => {
     res.json(req.user);
 });
 
-module.exports = { registerUser, loginUser, currentUser, googleLogin };
+//@desc Save a trip
+//@route POST /api/users/saved-trips/:id
+//@access Private
+const saveTrip = asyncHandler(async (req, res) => {
+    const tripId = req.params.id;
+    const userId = req.user.id; // From validateToken middleware
+
+    // Check if trip exists
+    const trip = await Trip.findById(tripId);
+    if (!trip) {
+        res.status(404);
+        throw new Error("Trip not found");
+    }
+
+    // Add to user's savedTrips if not already there
+    const user = await User.findById(userId);
+    if (!user.savedTrips.includes(tripId)) {
+        user.savedTrips.push(tripId);
+        await user.save();
+    }
+
+    res.status(200).json({ message: "Trip saved successfully", savedTrips: user.savedTrips });
+});
+
+//@desc Unsave a trip
+//@route DELETE /api/users/saved-trips/:id
+//@access Private
+const unsaveTrip = asyncHandler(async (req, res) => {
+    const tripId = req.params.id;
+    const userId = req.user.id;
+
+    const user = await User.findById(userId);
+    user.savedTrips = user.savedTrips.filter(id => id.toString() !== tripId);
+    await user.save();
+
+    res.status(200).json({ message: "Trip removed from saved", savedTrips: user.savedTrips });
+});
+
+//@desc Get saved trips
+//@route GET /api/users/saved-trips
+//@access Private
+const getSavedTrips = asyncHandler(async (req, res) => {
+    const userId = req.user.id;
+
+    const user = await User.findById(userId).populate("savedTrips");
+
+    // Sort by createdAt desc (most recent first) - though Trip doesn't have it by default unless timestamps: true is on Trip schema (which it is)
+    // We can sort the array if needed, but population returns in order of insertion usually. 
+    // Let's reverse to show newest saved first? Or rely on UI.
+    // Actually, populate just fills the array.
+
+    res.status(200).json(user.savedTrips);
+});
+
+module.exports = { registerUser, loginUser, currentUser, googleLogin, saveTrip, unsaveTrip, getSavedTrips };

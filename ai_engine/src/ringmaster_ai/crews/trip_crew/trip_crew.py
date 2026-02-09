@@ -36,26 +36,18 @@ class TripCrew():
         # Load keys into a dict for easy access by index {1: "k1", 2: "k2"...}
         self.keys_dict = {}
         for i in range(1, 10):
-            val = os.getenv(f"GROQ_{i}")
+            val = os.getenv(f"GROQ_KEY_{i}")
             if val:
                 self.keys_dict[i] = val
         
         # Helper to get key with specific fallback logic: Preferred -> Backup (4-9) -> Any
         def get_agent_key(preferred_index):
-            # 1. Try preferred key
-            if self.keys_dict.get(preferred_index):
-                return self.keys_dict[preferred_index]
-            
-            # 2. Try backup keys (4 to 9)
-            for i in range(4, 10):
-                if self.keys_dict.get(i):
-                    return self.keys_dict[i]
-            
-            # 3. Wrap around: just find ANY valid key
+            # Dynamic Load Balancing: Randomly select a key to distribute load
+            import random
             if self.keys_dict:
-                return list(self.keys_dict.values())[0]
+                return random.choice(list(self.keys_dict.values()))
             
-            # 4. Total failure
+            # Fallback
             return os.getenv("GROQ_API_KEY", "")
 
         # Assign unique keys
@@ -94,6 +86,18 @@ class TripCrew():
             model="groq/llama-3.3-70b-versatile",
             api_key=key_budget
         )
+        
+        # Manually load configs if they are still strings (Fix for CrewBase issue)
+        import yaml
+        if isinstance(self.agents_config, str):
+            config_path = os.path.join(os.path.dirname(__file__), self.agents_config)
+            with open(config_path, 'r') as f:
+                self.agents_config = yaml.safe_load(f)
+                
+        if isinstance(self.tasks_config, str):
+            config_path = os.path.join(os.path.dirname(__file__), self.tasks_config)
+            with open(config_path, 'r') as f:
+                self.tasks_config = yaml.safe_load(f)
 
     @agent
     def route_planner(self) -> Agent:

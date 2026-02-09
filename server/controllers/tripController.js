@@ -53,7 +53,6 @@ const createTripPlan = async (req, res) => {
         console.log(`[CACHE MISS] Calling AI Engine for ${destination} from ${origin} (${days} days, ${travelers} travelers)...`);
 
         // 3. Call AI Engine
-        // Construct the query object expected by the Python backend
         const aiPayload = {
             destination,
             origin,
@@ -64,33 +63,29 @@ const createTripPlan = async (req, res) => {
             current_date: new Date().toISOString().split('T')[0]
         };
 
-        // Call Python Service (assuming it's running on port 8000)
-        // Use the 'kickoff' endpoint or whatever the Python server exposes
-        // Based on previous context, it seems to be /plan-trip or similar.
-        // Let's assume the Python server accepts the payload directly or wrapped in 'inputs'.
-        // Checking `manual_test_trip_crew.py`, it uses `kickoff(inputs=inputs)`.
-        // The Python API wrapper (if it exists) likely exposes an endpoint.
-        // Assuming `src.ringmaster_ai.main:app` is running on 8000.
-        // Let's assume the endpoint is `/plan_trip` (standard convention) or just POST `/`?
-        // I'll assume `/plan-trip` based on `aiBridgeController.js` content I saw earlier:
-        // `axios.post('http://localhost:8000/plan-trip', { query });`
-        // But `manual_test` passes a dictionary.
+        // --- DETERMINISTIC FEASIBILITY CHECK ---
+        const { checkFeasibility } = require("../utils/feasibilityCalculator");
+        console.log(`[FEASIBILITY] Checking feasibility for ${destination} from ${origin}...`);
 
-        // Let's proceed with `/plan-trip` and pass the inputs.
-        const aiResponse = await axios.post("http://localhost:8000/plan-trip", aiPayload);
+        const feasibilityResult = await checkFeasibility(origin, destination, parseInt(days), parseInt(travelers || 1), parseInt(budget));
 
-        let tripData = aiResponse.data;
-
-        // CHECK FOR FEASIBILITY ERROR
-        if (tripData.is_feasible === false) {
-            console.log(`[FEASIBILITY CHECK] Trip rejected by AI: ${tripData.message}`);
-            // Use 400 Bad Request to indicate client error (low budget)
-            // The frontend should handle this and show the message
+        if (feasibilityResult && feasibilityResult.allowed === false) {
+            console.log(`[FEASIBILITY CHECK] Trip rejected by Math Logic: ${feasibilityResult.message}`);
             return res.status(400).json({
-                error: tripData.message || tripData.reason,
-                details: tripData
+                error: `Budget too low! ${feasibilityResult.message}`,
+                min_needed: feasibilityResult.min_needed,
+                details: feasibilityResult
             });
         }
+        // ---------------------------------------
+
+        console.log(`[CACHE MISS] Calling AI Engine for ${destination} from ${origin} (${days} days, ${travelers} travelers)...`);
+
+        // 3. Call AI Engine
+        // aiPayload is already defined above
+
+        const aiResponse = await axios.post("http://localhost:8000/plan-trip", aiPayload);
+        let tripData = aiResponse.data;
 
         // Fallback for previous error method (Backwards compatibility)
         if (tripData.error === "BudgetInsufficient") {

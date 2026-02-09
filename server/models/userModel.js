@@ -23,6 +23,10 @@ const userSchema = mongoose.Schema(
             type: String,
             required: false,
         },
+        savedTrips: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Trip"
+        }],
     },
     {
         timestamps: true,
