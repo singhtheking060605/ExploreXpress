@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useTrip } from '../TripContext';
-import { MapPin, Calendar, Users, DollarSign, Share2, Download, Heart, CheckCircle, Clock, Star, Info } from 'lucide-react';
-import { format } from 'date-fns';
+import { MapPin, Calendar, Users, DollarSign, Share2, Download, Heart, CheckCircle, Clock, Star, Info, PlusCircle } from 'lucide-react';
+import { format, addDays, parse } from 'date-fns';
 import Sidebar from './Sidebar';
 import MapComponent from './MapComponent';
+import ItineraryView from './ItineraryView'; // Import the new component
+import { useGoogleLogin } from '@react-oauth/google';
+import axios from 'axios';
+import api from '../../../services/api'; // Import configured axios instance
 
 const ResultsStep = () => {
     const {
@@ -20,12 +24,107 @@ const ResultsStep = () => {
     } = useTrip();
 
     const [activeTab, setActiveTab] = useState('overview');
+    const [isAddingToCalendar, setIsAddingToCalendar] = useState(false);
+    const [isSaved, setIsSaved] = useState(false); // Track saved state
+    const [isSaving, setIsSaving] = useState(false);
 
     useEffect(() => {
         if (!generatedTrip && !isGenerating && !generationError) {
             generateTripPlan();
         }
+        // Check if already saved? 
+        // Ideally we check user.savedTrips against generatedTrip._id but for now UI state is local to session or we need to fetch user on mount
     }, []);
+
+    // Check if trip is already saved (if user context is available)
+    // we can add this logic later or assume not saved initially for new trips.
+
+    const handleSaveTrip = async () => {
+        if (!generatedTrip?._id) return;
+        setIsSaving(true);
+        try {
+            await api.post(`/users/saved-trips/${generatedTrip._id}`);
+            setIsSaved(true);
+            // Optionally show toast
+        } catch (error) {
+            console.error("Failed to save trip:", error);
+            // If error is 401, user might not be logged in. Handle that?
+            alert("Failed to save trip. Please make sure you are logged in.");
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
+    // Calendar Integration
+    const addToCalendar = async (accessToken) => {
+        setIsAddingToCalendar(true);
+        let eventsAdded = 0;
+        const tripStart = startDate ? new Date(startDate) : new Date();
+
+        try {
+            const itinerary = generatedTrip?.itinerary || [];
+
+            for (const dayPlan of itinerary) {
+                // Calculate date for this day (Day 1 is start date)
+                const dayDate = addDays(tripStart, (dayPlan.day - 1));
+
+                if (dayPlan.activities) {
+                    for (const activity of dayPlan.activities) {
+                        try {
+                            // Parse time (e.g. "09:00 AM" or "14:00")
+                            // We'll assume a default duration of 2 hours if not specified
+                            let startTime = new Date(dayDate);
+                            let endTime = new Date(dayDate);
+
+                            // Simple time parsing logic
+                            const timeStr = activity.time || "09:00 AM";
+                            const parsedTime = parse(timeStr, 'hh:mm aa', new Date());
+
+                            if (isValidDate(parsedTime)) {
+                                startTime.setHours(parsedTime.getHours(), parsedTime.getMinutes());
+                                endTime.setHours(parsedTime.getHours() + 2, parsedTime.getMinutes()); // Default 2 hours
+                            } else {
+                                // Fallback if parsing fails
+                                startTime.setHours(9, 0);
+                                endTime.setHours(11, 0);
+                            }
+
+                            const event = {
+                                summary: `Trip: ${activity.activity}`,
+                                description: `${activity.description}\n\nLocation: ${destinations[0]?.city}`,
+                                start: { dateTime: startTime.toISOString() },
+                                end: { dateTime: endTime.toISOString() },
+                            };
+
+                            await axios.post(
+                                'https://www.googleapis.com/calendar/v3/calendars/primary/events',
+                                event,
+                                { headers: { Authorization: `Bearer ${accessToken}` } }
+                            );
+                            eventsAdded++;
+                        } catch (err) {
+                            console.error("Failed to add event:", activity.activity, err);
+                        }
+                    }
+                }
+            }
+            alert(`Successfully added ${eventsAdded} events to your Google Calendar!`);
+        } catch (error) {
+            console.error("Error adding to calendar:", error);
+            alert("Failed to add events to Google Calendar.");
+        } finally {
+            setIsAddingToCalendar(false);
+        }
+    };
+
+    const loginToCalendar = useGoogleLogin({
+        onSuccess: tokenResponse => addToCalendar(tokenResponse.access_token),
+        scope: 'https://www.googleapis.com/auth/calendar.events',
+    });
+
+    const isValidDate = (d) => {
+        return d instanceof Date && !isNaN(d);
+    }
 
     const totalDuration = destinations.reduce((acc, dest) => acc + parseInt(dest.duration || 0), 0);
     const endDate = startDate ? new Date(new Date(startDate).getTime() + (totalDuration * 24 * 60 * 60 * 1000)) : new Date();
@@ -58,7 +157,7 @@ const ResultsStep = () => {
         );
     }
 
-    // Helper to filter out placeholder strings
+    // Helper to filter out placeholder strings (Still needed for hotels/flights in this file)
     const firstValidImage = (url, fallback) => {
         if (!url || url === 'LEAVE_EMPTY' || url.includes('LEAVE_EMPTY')) return fallback;
         return url;
@@ -162,76 +261,7 @@ const ResultsStep = () => {
                 );
 
             case 'itinerary':
-                return (
-                    <div className="space-y-8 animate-in fade-in duration-300">
-                        {itineraryData.map((dayPlan, dayIndex) => (
-                            <div key={dayIndex} className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm">
-                                <div className="bg-slate-50 dark:bg-slate-900/50 p-4 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
-                                    <h4 className="font-bold text-slate-900 dark:text-white text-lg">Day {dayPlan.day}: {dayPlan.theme}</h4>
-                                    <span className="text-xs font-mono bg-white dark:bg-slate-800 px-3 py-1 rounded-full border border-slate-200 dark:border-slate-700 text-slate-500">
-                                        {dayPlan.activities?.length || 0} Stops
-                                    </span>
-                                </div>
-                                <div className="p-0">
-                                    {dayPlan.activities?.map((activity, actIndex) => (
-                                        <div key={actIndex} className="p-6 border-b border-slate-100 dark:border-slate-700 last:border-0 hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors group">
-                                            <div className="flex flex-col md:flex-row gap-6">
-                                                {/* Image */}
-                                                <div className="w-full md:w-32 h-32 rounded-xl bg-slate-200 overflow-hidden shadow-sm flex-shrink-0">
-                                                    <img
-                                                        src={firstValidImage(activity.image_url, `https://source.unsplash.com/200x200/?${activity.activity},${destinations[0].city}`)}
-                                                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                                                        alt={activity.activity}
-                                                        onError={(e) => e.target.src = `https://source.unsplash.com/200x200/?travel`}
-                                                    />
-                                                </div>
-
-                                                {/* Content */}
-                                                <div className="flex-1">
-                                                    <div className="flex justify-between items-start mb-2">
-                                                        <h5 className="font-bold text-slate-800 dark:text-white text-lg">{activity.activity}</h5>
-                                                        <span className="flex items-center gap-1 text-xs font-medium bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded text-slate-600 dark:text-slate-300">
-                                                            <Clock size={12} /> {activity.time}
-                                                        </span>
-                                                    </div>
-
-                                                    <p className="text-slate-600 dark:text-slate-400 text-sm mb-3">
-                                                        {activity.description}
-                                                    </p>
-
-                                                    {/* Details Badges */}
-                                                    {activity.details && (
-                                                        <div className="flex flex-wrap gap-2 mt-3">
-                                                            {activity.details.famous_for && (
-                                                                <span className="text-xs bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300 px-2 py-1 rounded border border-purple-100 dark:border-purple-800/30">
-                                                                    ✨ {activity.details.famous_for}
-                                                                </span>
-                                                            )}
-                                                            {activity.details.best_time_to_visit && (
-                                                                <span className="text-xs bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-300 px-2 py-1 rounded border border-amber-100 dark:border-amber-800/30">
-                                                                    ☀️ Best: {activity.details.best_time_to_visit}
-                                                                </span>
-                                                            )}
-                                                            {activity.details.opening_hours && (
-                                                                <span className="text-xs bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 px-2 py-1 rounded border border-blue-100 dark:border-blue-800/30">
-                                                                    🕒 {activity.details.opening_hours}
-                                                                </span>
-                                                            )}
-                                                        </div>
-                                                    )}
-
-                                                    <div className="mt-3 text-xs font-medium text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
-                                                        <div className="font-bold">₹</div> Est. Cost: {activity.cost_estimate}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                );
+                return <ItineraryView itinerary={itineraryData} destinations={destinations} />;
 
             case 'map':
                 return (
@@ -361,8 +391,16 @@ const ResultsStep = () => {
                     </p>
                 </div>
                 <div className="flex gap-2">
-                    <button className="p-2 text-slate-400 hover:text-red-500 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-sm transition-colors">
-                        <Heart size={20} />
+                    <button
+                        onClick={handleSaveTrip}
+                        className={`p-2 border rounded-lg shadow-sm transition-colors ${isSaved
+                            ? "bg-red-50 text-red-500 border-red-200"
+                            : "bg-white dark:bg-slate-800 text-slate-400 hover:text-red-500 border-slate-200 dark:border-slate-700"
+                            }`}
+                        title="Save Trip"
+                        disabled={isSaving}
+                    >
+                        <Heart size={20} fill={isSaved ? "currentColor" : "none"} />
                     </button>
                     <button className="p-2 text-slate-400 hover:text-brand-primary bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-sm transition-colors">
                         <Share2 size={20} />
@@ -376,6 +414,19 @@ const ResultsStep = () => {
                         title="Regenerate Trip"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-refresh-cw"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" /><path d="M21 3v5h-5" /><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" /><path d="M3 21v-5h5" /></svg>
+                    </button>
+                    <button
+                        onClick={() => loginToCalendar()}
+                        disabled={isAddingToCalendar}
+                        className="flex items-center gap-2 px-4 py-2 bg-brand-primary text-white rounded-lg shadow-sm hover:bg-brand-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        title="Add to Google Calendar"
+                    >
+                        {isAddingToCalendar ? (
+                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        ) : (
+                            <Calendar size={20} />
+                        )}
+                        <span className="hidden md:inline">Add to Calendar</span>
                     </button>
                 </div>
             </div>

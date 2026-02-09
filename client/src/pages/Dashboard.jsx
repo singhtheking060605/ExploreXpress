@@ -1,34 +1,40 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Calendar, MapPin, DollarSign, Clock, Plane } from 'lucide-react';
+import { Calendar, MapPin, DollarSign, Clock, Plane, Smartphone, ArrowRight } from 'lucide-react';
 import clsx from 'clsx';
+import api from '../services/api';
+import ItineraryView from './plan/components/ItineraryView';
 
 const Dashboard = () => {
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState('itinerary');
+    const [savedTrips, setSavedTrips] = useState([]);
+    const [selectedTrip, setSelectedTrip] = useState(null);
+    const [loading, setLoading] = useState(true);
 
-    const itinerary = [
-        {
-            day: "Day 1",
-            title: "Arrival in Tokyo",
-            events: [
-                { time: "09:00 AM", title: "Land at Narita Airport", icon: Plane },
-                { time: "11:00 AM", title: "Check-in at Hotel Gracery", icon: MapPin },
-                { time: "02:00 PM", title: "Explore Shinjuku", icon: MapPin },
-            ]
-        },
-        {
-            day: "Day 2",
-            title: "Historical Vibes",
-            events: [
-                { time: "09:00 AM", title: "Senso-ji Temple", icon: MapPin },
-                { time: "01:00 PM", title: "Lunch at Asakusa", icon: DollarSign },
-                { time: "04:00 PM", title: "Tokyo Skytree", icon: MapPin },
-            ]
-        }
-    ];
+    useEffect(() => {
+        const fetchSavedTrips = async () => {
+            try {
+                const response = await api.get('/users/saved-trips');
+                setSavedTrips(response.data);
+                if (response.data.length > 0) {
+                    setSelectedTrip(response.data[0]);
+                }
+            } catch (error) {
+                console.error("Failed to fetch saved trips:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchSavedTrips();
+    }, []);
+
+    // If a trip is selected, use its data for the itinerary view
+    const itinerary = selectedTrip?.tripData?.itinerary || [];
+    const destinations = selectedTrip?.tripData?.destinations ||
+        (selectedTrip ? [{ city: selectedTrip.destination, duration: selectedTrip.duration }] : []);
 
     return (
         <div className="max-w-7xl mx-auto space-y-8">
@@ -48,9 +54,62 @@ const Dashboard = () => {
 
             <div className="grid lg:grid-cols-3 gap-8">
 
-                {/* Left Column: Input & Summary */}
+                {/* Left Column: Saved Trips List & Input */}
                 <div className="lg:col-span-1 space-y-8">
-                    {/* Input Card */}
+
+                    {/* Saved Trips List */}
+                    <div className="space-y-4">
+                        <h2 className="text-lg font-bold dark:text-white flex items-center justify-between">
+                            Your Saved Trips
+                            <span className="text-xs bg-brand-primary/10 text-brand-primary px-2 py-1 rounded-full">{savedTrips.length}</span>
+                        </h2>
+
+                        {loading ? (
+                            <div className="text-center py-8 text-slate-400">Loading trips...</div>
+                        ) : savedTrips.length === 0 ? (
+                            <div className="bg-slate-50 dark:bg-slate-800/50 rounded-2xl p-8 text-center border border-dashed border-slate-300 dark:border-slate-700">
+                                <p className="text-slate-500 mb-4">No saved trips yet.</p>
+                                <button onClick={() => navigate('/plan')} className="text-brand-primary font-bold text-sm hover:underline">Plan your first trip</button>
+                            </div>
+                        ) : (
+                            <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
+                                {savedTrips.map((trip) => (
+                                    <div
+                                        key={trip._id}
+                                        onClick={() => setSelectedTrip(trip)}
+                                        className={clsx(
+                                            "group cursor-pointer rounded-2xl p-4 border transition-all duration-200 relative overflow-hidden",
+                                            selectedTrip?._id === trip._id
+                                                ? "bg-white dark:bg-slate-800 border-brand-primary shadow-md ring-1 ring-brand-primary"
+                                                : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-brand-primary/50"
+                                        )}
+                                    >
+                                        <div className="flex justify-between items-start mb-2">
+                                            <h3 className="font-bold text-slate-900 dark:text-white group-hover:text-brand-primary transition-colors">
+                                                {trip.tripData?.trip_name || trip.destination}
+                                            </h3>
+                                            <span className="text-xs font-mono bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded text-slate-500">
+                                                {trip.duration} Days
+                                            </span>
+                                        </div>
+                                        <div className="flex items-center gap-4 text-xs text-slate-500">
+                                            <span className="flex items-center gap-1">
+                                                <MapPin size={12} /> {trip.origin}
+                                            </span>
+                                            <span className="flex items-center gap-1 text-emerald-600 font-medium">
+                                                <DollarSign size={12} /> {Number(trip.budget).toLocaleString('en-IN')}
+                                            </span>
+                                        </div>
+                                        {selectedTrip?._id === trip._id && (
+                                            <div className="absolute right-0 top-0 bottom-0 w-1 bg-brand-primary" />
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Quick Plan Input Card (Moved below list) */}
                     <div className="glass dark:glass-dark p-6 rounded-2xl">
                         <h2 className="text-lg font-bold dark:text-white mb-4">Quick Plan</h2>
                         <div className="space-y-4">
@@ -76,83 +135,33 @@ const Dashboard = () => {
                             </button>
                         </div>
                     </div>
-
-                    {/* Trip Summary Card */}
-                    <div className="glass dark:glass-dark overflow-hidden rounded-2xl relative group cursor-pointer">
-                        <div className="absolute inset-0 bg-gradient-to-br from-brand-primary/80 to-brand-secondary/80 mix-blend-multiply opacity-0 group-hover:opacity-10 transition-opacity" />
-                        <div className="h-32 bg-[url('https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?q=80&w=1000&auto=format&fit=crop')] bg-cover bg-center" />
-                        <div className="p-6 relative">
-                            <div className="absolute -top-10 right-6 w-20 h-20 rounded-xl bg-white dark:bg-slate-800 shadow-xl flex flex-col items-center justify-center border-4 border-slate-50 dark:border-slate-900">
-                                <span className="text-xs font-bold text-slate-400 uppercase">Oct</span>
-                                <span className="text-2xl font-black text-brand-primary">24</span>
-                            </div>
-
-                            <h2 className="text-2xl font-bold dark:text-white mb-1">Tokyo, Japan</h2>
-                            <p className="text-sm text-slate-500 mb-6">5 Days • 4 Nights</p>
-
-                            <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl">
-                                <div>
-                                    <p className="text-xs text-slate-400 font-medium">Total Budget</p>
-                                    <p className="text-lg font-bold text-green-500">$2,450</p>
-                                </div>
-                                <div className="w-10 h-10 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-green-600 dark:text-green-400">
-                                    <DollarSign size={20} />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
 
-                {/* Right Column: Itinerary Timeline */}
+                {/* Right Column: Itinerary Display */}
                 <div className="lg:col-span-2 space-y-6">
-                    <div className="flex items-center gap-4 border-b border-slate-200 dark:border-slate-800 pb-1">
-                        <button
-                            onClick={() => setActiveTab('itinerary')}
-                            className={clsx("pb-3 text-sm font-semibold transition-colors relative", activeTab === 'itinerary' ? "text-brand-primary" : "text-slate-500 hover:text-slate-700")}
-                        >
-                            Itinerary
-                            {activeTab === 'itinerary' && <motion.div layoutId="line" className="absolute bottom-0 left-0 right-0 h-0.5 bg-brand-primary" />}
-                        </button>
-                        <button
-                            onClick={() => setActiveTab('map')}
-                            className={clsx("pb-3 text-sm font-semibold transition-colors relative", activeTab === 'map' ? "text-brand-primary" : "text-slate-500 hover:text-slate-700")}
-                        >
-                            Map View
-                            {activeTab === 'map' && <motion.div layoutId="line" className="absolute bottom-0 left-0 right-0 h-0.5 bg-brand-primary" />}
-                        </button>
-                    </div>
+                    {selectedTrip ? (
+                        <>
+                            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6 shadow-sm">
+                                <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
+                                    {selectedTrip.tripData?.trip_name || `Trip to ${selectedTrip.destination}`}
+                                </h2>
+                                <p className="text-slate-500 mb-6 flex flex-wrap gap-4 text-sm">
+                                    <span className="flex items-center gap-1"><MapPin size={14} /> {selectedTrip.destination}</span>
+                                    <span className="w-1 h-1 bg-slate-300 rounded-full hidden md:block" />
+                                    <span className="flex items-center gap-1"><Clock size={14} /> {selectedTrip.duration} Days</span>
+                                    <span className="w-1 h-1 bg-slate-300 rounded-full hidden md:block" />
+                                    <span className="flex items-center gap-1"><DollarSign size={14} /> ₹{Number(selectedTrip.budget).toLocaleString('en-IN')}</span>
+                                </p>
 
-                    <div className="space-y-8 pl-4">
-                        {itinerary.map((day, idx) => (
-                            <motion.div
-                                initial={{ opacity: 0, x: -20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ delay: idx * 0.1 }}
-                                key={idx}
-                                className="relative pl-8 border-l-2 border-slate-200 dark:border-slate-800"
-                            >
-                                <div className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-brand-primary border-4 border-white dark:border-slate-900" />
-
-                                <h3 className="text-lg font-bold dark:text-white mb-4">{day.day} <span className="text-slate-400 font-normal text-sm ml-2">{day.title}</span></h3>
-
-                                <div className="space-y-4">
-                                    {day.events.map((event, eIdx) => (
-                                        <div key={eIdx} className="glass dark:glass-dark p-4 rounded-xl flex items-center gap-4 hover:shadow-md transition-shadow cursor-pointer border-l-4 border-brand-secondary/50">
-                                            <div className="p-3 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
-                                                <event.icon size={18} />
-                                            </div>
-                                            <div>
-                                                <p className="text-sm font-bold dark:text-slate-200">{event.title}</p>
-                                                <p className="text-xs text-brand-primary font-medium flex items-center gap-1">
-                                                    <Clock size={12} /> {event.time}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </motion.div>
-                        ))}
-                    </div>
+                                <ItineraryView itinerary={itinerary} destinations={destinations} />
+                            </div>
+                        </>
+                    ) : (
+                        <div className="h-full flex flex-col items-center justify-center text-slate-400 p-12 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-3xl">
+                            <MapPin size={48} className="mb-4 opacity-20" />
+                            <p className="text-lg font-medium">Select a trip to view details</p>
+                        </div>
+                    )}
                 </div>
 
             </div>

@@ -19,3 +19,14 @@ __pycache__/
 dist/
 build/
 coverage/
+
+# Logs
+*.log
+
+# Local Configs
+*_keys.py
+ai_engine/itinerary.json
+
+# Local Tests
+test_litellm.py
+manual_test_*.py
