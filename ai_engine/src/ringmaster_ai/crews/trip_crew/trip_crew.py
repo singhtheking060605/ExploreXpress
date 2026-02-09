@@ -4,6 +4,7 @@ from crewai.project import CrewBase, agent, crew, task
 import os
 import itertools
 
+
 class GroqRoundRobinManager:
     def __init__(self):
         self.keys = []
@@ -11,9 +12,9 @@ class GroqRoundRobinManager:
         if os.getenv("GROQ_API_KEY"):
             self.keys.append(os.getenv("GROQ_API_KEY"))
         
-        # Check GROQ_KEY_1 through GROQ_KEY_9
-        for i in range(1, 10):
-            key = os.getenv(f"GROQ_KEY_{i}")
+        # Check GROQ_1 through GROQ_20 (and GROQ_KEY_x for backward compatibility)
+        for i in range(1, 21):
+            key = os.getenv(f"GROQ_{i}") or os.getenv(f"GROQ_KEY_{i}")
             if key:
                 self.keys.append(key)
         
@@ -27,6 +28,9 @@ class GroqRoundRobinManager:
     def get_next_key(self):
         return next(self.key_cycle)
 
+# Global Manager Instance to persist across multiple requests
+_global_key_manager = GroqRoundRobinManager()
+
 @CrewBase
 class TripCrew():
     """Concierge Crew for Trip Planning"""
@@ -36,7 +40,7 @@ class TripCrew():
     def __init__(self):
         # Load keys into a dict for easy access by index {1: "k1", 2: "k2"...}
         self.keys_dict = {}
-        for i in range(1, 10):
+        for i in range(1, 21):
             val = os.getenv(f"GROQ_{i}") or os.getenv(f"GROQ_API_KEY_{i}") or os.getenv(f"GROQ_KEY_{i}")
             if val:
                 self.keys_dict[i] = val
@@ -60,17 +64,14 @@ class TripCrew():
         if not self.keys_dict:
              print("CRITICAL WARNING: No Groq keys loaded!")
 
-        # Initialize Round Robin Manager
-        self.key_manager = GroqRoundRobinManager()
-
-        # Assign unique keys using Round Robin
-        key_route = self.key_manager.get_next_key()
-        key_hotel = self.key_manager.get_next_key()
-        key_flight = self.key_manager.get_next_key()
-        key_guide = self.key_manager.get_next_key()
-        key_budget = self.key_manager.get_next_key()
+        # Assign unique keys using Global Round Robin Manager
+        key_route = _global_key_manager.get_next_key()
+        key_hotel = _global_key_manager.get_next_key()
+        key_flight = _global_key_manager.get_next_key()
+        key_guide = _global_key_manager.get_next_key()
+        key_budget = _global_key_manager.get_next_key()
         
-        # Route Planner LLM
+        # Route Planner LLM (Switching to Mixtral for better limits)
         self.llm_route_planner = LLM(
             model="groq/llama-3.3-70b-versatile",
             api_key=key_route
@@ -100,6 +101,24 @@ class TripCrew():
             api_key=key_budget
         )
         
+        # Additional Agents (Switching to Mixtral)
+        self.llm_local_guide_8b = LLM(
+            model="groq/llama-3.3-70b-versatile",
+            api_key=_global_key_manager.get_next_key()
+        )
+        self.llm_hotel_scout_8b = LLM(
+            model="groq/llama-3.3-70b-versatile",
+            api_key=_global_key_manager.get_next_key()
+        )
+        self.llm_flight_expert_8b = LLM(
+            model="groq/llama-3.3-70b-versatile",
+            api_key=_global_key_manager.get_next_key()
+        )
+        self.llm_travel_coordinator_8b = LLM(
+            model="groq/llama-3.3-70b-versatile",
+            api_key=_global_key_manager.get_next_key()
+        )
+        
         # Manually load configs if they are still strings (Fix for CrewBase issue)
         import yaml
         if isinstance(self.agents_config, str):
@@ -113,15 +132,13 @@ class TripCrew():
                 self.tasks_config = yaml.safe_load(f)
 
         # Travel Coordinator LLM
-        self.llm_travel_coordinator = LLM(
-            model="groq/llama-3.3-70b-versatile",
-            api_key=self.key_manager.get_next_key()
-        )
+        # Already initialized above as self.llm_travel_coordinator_8b
+        pass
 
         # Itinerary Specialist LLM
         self.llm_itinerary_specialist = LLM(
-            model="groq/llama-3.3-70b-versatile",
-            api_key=self.key_manager.get_next_key()
+             model="groq/llama-3.3-70b-versatile",
+             api_key=_global_key_manager.get_next_key()
         )
 
     @agent
@@ -130,7 +147,8 @@ class TripCrew():
             config=self.agents_config['route_planner'],
             verbose=True,
             allow_delegation=False,
-            llm=self.llm_route_planner
+            llm=self.llm_route_planner,
+            max_rpm=1 # Heavy task, strict limit
         )
 
     @agent
@@ -140,7 +158,8 @@ class TripCrew():
             verbose=True,
             allow_delegation=False,
             # Tools disabled for stability with Groq
-            llm=self.llm_local_guide
+            llm=self.llm_local_guide_8b, # Unique 8b instance
+            max_rpm=2
         )
 
     @agent
@@ -149,7 +168,8 @@ class TripCrew():
             config=self.agents_config['hotel_scout'],
             verbose=True,
             allow_delegation=False,
-            llm=self.llm_hotel_scout
+            llm=self.llm_hotel_scout_8b, # Unique 8b instance
+            max_rpm=2
         )
 
     @agent
@@ -158,7 +178,8 @@ class TripCrew():
             config=self.agents_config['flight_expert'],
             verbose=True,
             allow_delegation=False,
-            llm=self.llm_flight_expert
+            llm=self.llm_flight_expert_8b, # Unique 8b instance
+            max_rpm=2
         )
 
     @agent
@@ -168,7 +189,8 @@ class TripCrew():
             verbose=True,
             allow_delegation=False,
             # Tools disabled for stability with Groq
-            llm=self.llm_budget_guardian
+            llm=self.llm_budget_guardian,
+            max_rpm=2
         )
 
     @agent
@@ -177,7 +199,8 @@ class TripCrew():
             config=self.agents_config['travel_coordinator_agent'],
             verbose=True,
             allow_delegation=False,
-            llm=self.llm_travel_coordinator
+            llm=self.llm_travel_coordinator_8b, # Unique 8b instance
+            max_rpm=2
         )
 
     @agent
@@ -186,7 +209,8 @@ class TripCrew():
             config=self.agents_config['itinerary_specialist_agent'],
             verbose=True,
             allow_delegation=False,
-            llm=self.llm_itinerary_specialist
+            llm=self.llm_itinerary_specialist,
+            max_rpm=1 # Heavy task, strict limit
         )
 
     @task
@@ -198,8 +222,7 @@ class TripCrew():
     @task
     def identify_optimal_route_task(self) -> Task:
         return Task(
-            config=self.tasks_config['identify_optimal_route_task'],
-            context=[self.feasibility_check()]
+            config=self.tasks_config['identify_optimal_route_task']
         )
 
     @task
@@ -213,55 +236,68 @@ class TripCrew():
     def enrichment_task(self) -> Task:
         return Task(
             config=self.tasks_config['enrichment_task'],
-            context=[self.feasibility_check(), self.plan_multi_city_itinerary_task()]
+            context=[self.plan_multi_city_itinerary_task()]
         )
 
     @task
     def hotel_task(self) -> Task:
         return Task(
-            config=self.tasks_config['hotel_task'],
-            context=[self.feasibility_check()]
+            config=self.tasks_config['hotel_task']
         )
 
     @task
     def flight_task(self) -> Task:
         return Task(
-            config=self.tasks_config['flight_task'],
-            context=[self.feasibility_check()]
+            config=self.tasks_config['flight_task']
         )
 
     @task
     def budget_task(self) -> Task:
         return Task(
             config=self.tasks_config['budget_task'],
-            context=[self.feasibility_check(), self.enrichment_task(), self.hotel_task(), self.flight_task()],
             output_file='itinerary.json'
         )
 
     @crew
-    def crew(self) -> Crew:
+    def feasibility_crew(self) -> Crew:
+        return Crew(
+            agents=[self.budget_guardian()],
+            tasks=[self.feasibility_check()],
+            process=Process.sequential,
+            verbose=True,
+            manager_llm=self.llm_route_planner
+        )
+
+    @crew
+    def logistics_crew(self) -> Crew:
         return Crew(
             agents=[
-                self.budget_guardian(), # Runs feasibility check context first
                 self.travel_coordinator_agent(),
                 self.itinerary_specialist_agent(),
                 self.local_guide(),
                 self.hotel_scout(),
-                self.flight_expert(),
-                self.budget_guardian() # Runs budget task last
+                self.flight_expert()
             ],
             tasks=[
-                self.feasibility_check(),
                 self.identify_optimal_route_task(),
                 self.plan_multi_city_itinerary_task(),
                 self.enrichment_task(),
                 self.hotel_task(),
-                self.flight_task(),
-                self.budget_task()
+                self.flight_task()
             ],
             process=Process.sequential,
             verbose=True,
             manager_llm=self.llm_route_planner,
             memory=False,
             planning=False
+        )
+
+    @crew
+    def budget_crew(self) -> Crew:
+        return Crew(
+            agents=[self.budget_guardian()],
+            tasks=[self.budget_task()], # Context will be fed via inputs["trip_details"]
+            process=Process.sequential,
+            verbose=True,
+            manager_llm=self.llm_route_planner
         )

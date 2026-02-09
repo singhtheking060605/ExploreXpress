@@ -10,8 +10,11 @@ feasibility_check:
     2. Subtract (Travel Cost * Travelers) from {budget}.
     3. Divide the remaining amount by ({days} * {travelers}) to get "Daily Spend Per Person".
     4. DECISION:
-       - IF Daily Spend < 2000 INR (or equivalent currency): FAIL.
-       - IF Daily Spend >= 2000 INR: PASS.
+       - IF Daily Spend < 500 INR (or equivalent currency): FAIL (Only if absolutely impossible).
+         * REQUIREMENT: In the 'message' field, explicitly state "Your budget is extremely low." 
+         * REQUIREMENT: Calculate and provide the "Minimum Suggested Budget".
+       - IF Daily Spend >= 500 INR: PASS.
+       - NOTE: Be lenient. If it's close, Mark as FEASIBLE. Do not be strict.
   expected_output: >
     JSON Object:
     {
@@ -19,7 +22,9 @@ feasibility_check:
       "reason": "Reason for failure or success",
       "estimated_travel_cost": number,
       "daily_spend_per_person": number,
-      "message": "User friendly message explanation"
+      "daily_spend_per_person": number,
+      "message": "User friendly message explaining failure or success. IF FAILED, INCLUDE 'Minimum Budget Allowed: XXXXX'",
+      "minimum_suggested_budget": number
     }
   agent: budget_guardian
 
@@ -37,13 +42,17 @@ identify_optimal_route_task:
   expected_output: >
     An optimized route sequence with a detailed explanation of why this order was chosen based on budget, events, and logistics.
   agent: travel_coordinator_agent
-  context: [feasibility_check]
+
 
 plan_multi_city_itinerary_task:
   description: >
     Based on the OPTIMAL ROUTE provided in the previous task, create a comprehensive day-by-day itinerary 
     that covers ALL cities listed. Do not skip any city.
     Ensure smooth transitions between cities and include suggested transport modes.
+    
+    CRITICAL: You MUST generate a detailed plan for EXACTLY {days} DAYS.
+    Do NOT summarize or group days (e.g., "Days 3-5"). Write out Day 1, Day 2, Day 3, ... Day {days} individually.
+    If {days} is 5, you must provide 5 distinct daily plans.
     Note: {days} is the total trip duration, distribute days wisely among cities.
   expected_output: >
     A full, multi-city day-by-day itinerary including all destinations in the optimized order.
@@ -62,7 +71,7 @@ enrichment_task:
   expected_output: >
     A detailed itinerary with specific place names and descriptions OR the error JSON.
   agent: local_guide
-  context: [feasibility_check, plan_multi_city_itinerary_task]
+  context: [plan_multi_city_itinerary_task]
 
 hotel_task:
   description: >
@@ -75,7 +84,7 @@ hotel_task:
   expected_output: >
     A list of 5 hotels with details OR the error JSON.
   agent: hotel_scout
-  context: [feasibility_check]
+
 
 flight_task:
   description: >
@@ -87,7 +96,7 @@ flight_task:
   expected_output: >
     A list of 3 flight options with airlines and duration OR the error JSON.
   agent: flight_expert
-  context: [feasibility_check]
+
 
 budget_task:
   description: >
@@ -97,13 +106,17 @@ budget_task:
       Do NOT change anything.
 
     IF feasible:
-    Take the detailed itinerary from the Local Guide, hotel options from Hotel Scout, and flight options from Flight Expert.
+    Analyze the provided trip details: {trip_details}.
     1. Consolidate the flight options and hotel options.
     2. Estimate costs for each activity based on typical rates in Indian Rupees (INR).
     3. Ensure the plan fits within the total budget: {budget} INR.
     4. Compile the FINAL JSON output matching the structure exactly.
-    5. For each activity and hotel, include a real image URL from your knowledge or search.
+    5. For 'image_url' fields, logic MUST be: ALWAYS use the exact string "LEAVE_EMPTY_FOR_BACKEND". Do not try to generate a URL.
     6. Coordinates MUST be [latitude, longitude] numbers.
+    
+    CRITICAL: The 'itinerary' array in the JSON MUST contain EXACTLY {days} items.
+    One item for each day from Day 1 to Day {days}.
+    Do NOT miss any days. If the input has missing days, INFER them to complete the {days}-day trip.
 
   expected_output: >
     A strict JSON string matching the following structure (OR the error structure from feasibility_check):
@@ -155,4 +168,4 @@ budget_task:
       ]
     }
   agent: budget_guardian
-  context: [feasibility_check, enrichment_task, hotel_task, flight_task]
+  context: [enrichment_task, hotel_task, flight_task]

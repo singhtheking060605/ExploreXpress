@@ -1,0 +1,1068 @@
+Starting TripCrew test...
+Set dummy OPENAI_API_KEY to bypass validation.
+Loaded Groq Keys: [1, 2, 3, 4, 5, 6, 7, 8] (Count: 8)
+[36m╭─[0m[36m 🚀 Crew Execution Star[0m[36m─╮[0m
+[36m│[0m                         [36m│[0m
+[36m│[0m  [1;36mCrew Execution [0m        [36m│[0m
+[36m│[0m  [1;36mStarted[0m                [36m│[0m
+[36m│[0m  [37mName: [0m                 [36m│[0m
+[36m│[0m  [36mcrew[0m                   [36m│[0m
+[36m│[0m  [37mID: [0m                   [36m│[0m
+[36m│[0m  [36mf75f81d4-b42f-4e1f-92[0m  [36m│[0m
+[36m│[0m  [36m70-853a5706e1ab[0m        [36m│[0m
+[36m│[0m                         [36m│[0m
+[36m│[0m                         [36m│[0m
+[36m╰─────────────────────────╯[0m
+
+[33m╭─[0m[33m───[0m[33m 📋 Task Started [0m[33m───[0m[33m─╮[0m
+[33m│[0m                         [33m│[0m
+[33m│[0m  [1;33mTask Started[0m           [33m│[0m
+[33m│[0m  [37mName: [0m                 [33m│[0m
+[33m│[0m  [33mfeasibility_check[0m      [33m│[0m
+[33m│[0m  [37mID: [0m                   [33m│[0m
+[33m│[0m  [33m24d6c78d-d816-4f63-b6[0m  [33m│[0m
+[33m│[0m  [33m12-117ca7f10dfd[0m        [33m│[0m
+[33m│[0m                         [33m│[0m
+[33m│[0m                         [33m│[0m
+[33m╰─────────────────────────╯[0m
+
+[35m╭─[0m[35m──[0m[35m 🤖 Agent Started [0m[35m───[0m[35m─╮[0m
+[35m│[0m                         [35m│[0m
+[35m│[0m  [37mAgent: [0m[1;92mFinancial [0m      [35m│[0m
+[35m│[0m  [1;92mAdvisor & Gatekeeper[0m   [35m│[0m
+[35m│[0m                         [35m│[0m
+[35m│[0m  [37mTask: [0m[92mAnalyze if the [0m  [35m│[0m
+[35m│[0m  [92mrequested trip is [0m     [35m│[0m
+[35m│[0m  [92mfinancially [0m           [35m│[0m
+[35m│[0m  [92mrealistic. inputs: [0m    [35m│[0m
+[35m│[0m  [92mSource: Delhi, [0m        [35m│[0m
+[35m│[0m  [92mDestination: Jaipur, [0m  [35m│[0m
+[35m│[0m  [92mBudget: 50000, [0m        [35m│[0m
+[35m│[0m  [92mTravelers: 2, Days: [0m   [35m│[0m
+[35m│[0m  [92m3, Travel Style: [0m      [35m│[0m
+[35m│[0m  [92mLeisure.[0m               [35m│[0m
+[35m│[0m  [92mLOGIC: 1. Estimate [0m    [35m│[0m
+[35m│[0m  [92mrough travel cost per[0m  [35m│[0m
+[35m│[0m  [92mperson from Delhi to [0m  [35m│[0m
+[35m│[0m  [92mJaipur (round trip).[0m   [35m│[0m
+[35m│[0m  [92m   - If Source == [0m     [35m│[0m
+[35m│[0m  [92mDestination, Travel [0m   [35m│[0m
+[35m│[0m  [92mCost = 0.[0m              [35m│[0m
+[35m│[0m  [92m   - Assume [0m           [35m│[0m
+[35m│[0m  [92mconservative flight [0m   [35m│[0m
+[35m│[0m  [92mprices.[0m                [35m│[0m
+[35m│[0m  [92m2. Subtract (Travel [0m   [35m│[0m
+[35m│[0m  [92mCost * Travelers) [0m     [35m│[0m
+[35m│[0m  [92mfrom 50000. 3. Divide[0m  [35m│[0m
+[35m│[0m  [92mthe remaining amount [0m  [35m│[0m
+[35m│[0m  [92mby (3 * 2) to get [0m     [35m│[0m
+[35m│[0m  [92m"Daily Spend Per [0m      [35m│[0m
+[35m│[0m  [92mPerson". 4. DECISION:[0m  [35m│[0m
+[35m│[0m  [92m   - IF Daily Spend <[0m  [35m│[0m
+[35m│[0m  [92m2000 INR (or [0m          [35m│[0m
+[35m│[0m  [92mequivalent currency):[0m  [35m│[0m
+[35m│[0m  [92mFAIL.[0m                  [35m│[0m
+[35m│[0m  [92m   - IF Daily Spend [0m   [35m│[0m
+[35m│[0m  [92m>= 2000 INR: PASS.[0m     [35m│[0m
+[35m│[0m                         [35m│[0m
+[35m│[0m                         [35m│[0m
+[35m╰─────────────────────────╯[0m
+
+[32m╭─[0m[32m ✅ Agent Final Answer [0m[32m─╮[0m
+[32m│[0m                         [32m│[0m
+[32m│[0m  [37mAgent: [0m[1;92mFinancial [0m      [32m│[0m
+[32m│[0m  [1;92mAdvisor & Gatekeeper[0m   [32m│[0m
+[32m│[0m                         [32m│[0m
+[32m│[0m  [37mFinal Answer:[0m          [32m│[0m
+[32m│[0m  [92mBased on the provided[0m  [32m│[0m
+[32m│[0m  [92mlogic, I will [0m         [32m│[0m
+[32m│[0m  [92mcalculate the [0m         [32m│[0m
+[32m│[0m  [92mfeasibility of the [0m    [32m│[0m
+[32m│[0m  [92mtrip.[0m                  [32m│[0m
+[32m│[0m                         [32m│[0m
+[32m│[0m  [92mSince the source and [0m  [32m│[0m
+[32m│[0m  [92mdestination are the [0m   [32m│[0m
+[32m│[0m  [92msame, Delhi, I will [0m   [32m│[0m
+[32m│[0m  [92mset the travel cost [0m   [32m│[0m
+[32m│[0m  [92mto 0 for a round [0m      [32m│[0m
+[32m│[0m  [92mtrip.[0m                  [32m│[0m
+[32m│[0m                         [32m│[0m
+[32m│[0m  [92mEstimated travel cost[0m  [32m│[0m
+[32m│[0m  [92mper person: 0[0m          [32m│[0m
+[32m│[0m                         [32m│[0m
+[32m│[0m  [92mRemaining budget [0m      [32m│[0m
+[32m│[0m  [92mafter subtracting [0m     [32m│[0m
+[32m│[0m  [92mtravel cost:[0m           [32m│[0m
+[32m│[0m  [92m50000 - (0 * 2) = [0m     [32m│[0m
+[32m│[0m  [92m50000[0m                  [32m│[0m
+[32m│[0m                         [32m│[0m
+[32m│[0m  [92mDaily spend per [0m       [32m│[0m
+[32m│[0m  [92mperson:[0m                [32m│[0m
+[32m│[0m  [92mDaily spend per [0m       [32m│[0m
+[32m│[0m  [92mperson = Remaining [0m    [32m│[0m
+[32m│[0m  [92mbudget / (Days * [0m      [32m│[0m
+[32m│[0m  [92mTravelers)[0m             [32m│[0m
+[32m│[0m  [92m= 50000 / (3 * 2)[0m      [32m│[0m
+[32m│[0m  [92m= 50000 / 6 ≈ 8333.33[0m  [32m│[0m
+[32m│[0m  [92mINR[0m                    [32m│[0m
+[32m│[0m                         [32m│[0m
+[32m│[0m  [92mSince the daily spend[0m  [32m│[0m
+[32m│[0m  [92mper person (8333.33 [0m   [32m│[0m
+[32m│[0m  [92mINR) is less than the[0m  [32m│[0m
+[32m│[0m  [92mspecified limit (2000[0m  [32m│[0m
+[32m│[0m  [92mINR), this trip is [0m    [32m│[0m
+[32m│[0m  [92mnot feasible.[0m          [32m│[0m
+[32m│[0m                         [32m│[0m
+[32m│[0m  [92mHere is the JSON [0m      [32m│[0m
+[32m│[0m  [92mresponse:[0m              [32m│[0m
+[32m│[0m                         [32m│[0m
+[32m│[0m  [92m```json[0m                [32m│[0m
+[32m│[0m  [92m{[0m                      [32m│[0m
+[32m│[0m  [92m  "is_feasible": [0m      [32m│[0m
+[32m│[0m  [92mfalse,[0m                 [32m│[0m
+[32m│[0m  [92m  "reason": "The [0m      [32m│[0m
+[32m│[0m  [92mdaily spend per [0m       [32m│[0m
+[32m│[0m  [92mperson is less than [0m   [32m│[0m
+[32m│[0m  [92mthe minimum required [0m  [32m│[0m
+[32m│[0m  [92mbudget of 2000 INR.",[0m  [32m│[0m
+[32m│[0m  [92m  "estimated_travel_c[0m  [32m│[0m
+[32m│[0m  [92most": 0,[0m               [32m│[0m
+[32m│[0m  [92m  "daily_spend_per_pe[0m  [32m│[0m
+[32m│[0m  [92mrson": 8333.33,[0m        [32m│[0m
+[32m│[0m  [92m  "message": [0m          [32m│[0m
+[32m│[0m  [92m"Unfortunately, this [0m  [32m│[0m
+[32m│[0m  [92mtrip is not [0m           [32m│[0m
+[32m│[0m  [92mfinancially feasible [0m  [32m│[0m
+[32m│[0m  [92mwith your given [0m       [32m│[0m
+[32m│[0m  [92mbudget and travel [0m     [32m│[0m
+[32m│[0m  [92mplans."[0m                [32m│[0m
+[32m│[0m  [92m}[0m                      [32m│[0m
+[32m│[0m  [92m```[0m                    [32m│[0m
+[32m│[0m                         [32m│[0m
+[32m╰─────────────────────────╯[0m
+
+
+[Rate Limit Protection] Sleeping for 60 seconds to reset TPM quota...
+
+[32m╭─[0m[32m 📋 Task Completio[0m[32m─╮[0m
+[32m│[0m                    [32m│[0m
+[32m│[0m  [1;32mTask Completed[0m    [32m│[0m
+[32m│[0m  [37mName: [0m            [32m│[0m
+[32m│[0m  [32mfeasibility_chec[0m  [32m│[0m
+[32m│[0m  [32mk[0m                 [32m│[0m
+[32m│[0m  [37mAgent: [0m           [32m│[0m
+[32m│[0m  [32mFinancial [0m        [32m│[0m
+[32m│[0m  [32mAdvisor & [0m        [32m│[0m
+[32m│[0m  [32mGatekeeper[0m        [32m│[0m
+[32m│[0m                    [32m│[0m
+[32m│[0m                    [32m│[0m
+[32m│[0m                    [32m│[0m
+[32m╰────────────────────╯[0m
+
+[33m╭─[0m[33m 📋 Task Started [0m[33m─[0m[33m─╮[0m
+[33m│[0m                    [33m│[0m
+[33m│[0m  [1;33mTask Started[0m      [33m│[0m
+[33m│[0m  [37mName: [0m            [33m│[0m
+[33m│[0m  [33midentify_optimal[0m  [33m│[0m
+[33m│[0m  [33m_route_task[0m       [33m│[0m
+[33m│[0m  [37mID: [0m              [33m│[0m
+[33m│[0m  [33m43c80602-4543-47[0m  [33m│[0m
+[33m│[0m  [33m36-ad69-064a8d07[0m  [33m│[0m
+[33m│[0m  [33mf12f[0m              [33m│[0m
+[33m│[0m                    [33m│[0m
+[33m│[0m                    [33m│[0m
+[33m╰────────────────────╯[0m
+
+[35m╭─[0m[35m 🤖 Agent Started [0m[35m─╮[0m
+[35m│[0m                    [35m│[0m
+[35m│[0m  [37mAgent: [0m[1;92mTravel [0m    [35m│[0m
+[35m│[0m  [1;92mCoordinator & [0m    [35m│[0m
+[35m│[0m  [1;92mRoute Optimizer[0m   [35m│[0m
+[35m│[0m                    [35m│[0m
+[35m│[0m  [37mTask: [0m[92mAnalyze [0m    [35m│[0m
+[35m│[0m  [92mthe following [0m    [35m│[0m
+[35m│[0m  [92mlist of [0m          [35m│[0m
+[35m│[0m  [92mdestinations: [0m    [35m│[0m
+[35m│[0m  [92mJaipur. Your [0m     [35m│[0m
+[35m│[0m  [92mgoal is to [0m       [35m│[0m
+[35m│[0m  [92mdetermine the [0m    [35m│[0m
+[35m│[0m  [92mMOST OPTIMAL [0m     [35m│[0m
+[35m│[0m  [92morder to visit [0m   [35m│[0m
+[35m│[0m  [92mthese cities.[0m     [35m│[0m
+[35m│[0m  [92mCRITICAL [0m         [35m│[0m
+[35m│[0m  [92mREQUIREMENTS: 1.[0m  [35m│[0m
+[35m│[0m  [92mBUDGET: Compare [0m  [35m│[0m
+[35m│[0m  [92mtravel costs [0m     [35m│[0m
+[35m│[0m  [92mbetween the [0m      [35m│[0m
+[35m│[0m  [92mcities and [0m       [35m│[0m
+[35m│[0m  [92mrecommend the [0m    [35m│[0m
+[35m│[0m  [92msequence that [0m    [35m│[0m
+[35m│[0m  [92mminimizes [0m        [35m│[0m
+[35m│[0m  [92mtransit [0m          [35m│[0m
+[35m│[0m  [92mexpenses. 2. [0m     [35m│[0m
+[35m│[0m  [92mEVENTS: Research[0m  [35m│[0m
+[35m│[0m  [92mif there are any[0m  [35m│[0m
+[35m│[0m  [92mspecific [0m         [35m│[0m
+[35m│[0m  [92mfestivals, [0m       [35m│[0m
+[35m│[0m  [92mevents, or "good[0m  [35m│[0m
+[35m│[0m  [92mthings [0m           [35m│[0m
+[35m│[0m  [92mhappening" in [0m    [35m│[0m
+[35m│[0m  [92mthese cities [0m     [35m│[0m
+[35m│[0m  [92mstarting from [0m    [35m│[0m
+[35m│[0m  [92m2025-02-10 for 3[0m  [35m│[0m
+[35m│[0m  [92mdays. If an [0m      [35m│[0m
+[35m│[0m  [92mevent is [0m         [35m│[0m
+[35m│[0m  [92mtime-sensitive, [0m  [35m│[0m
+[35m│[0m  [92mprioritize [0m       [35m│[0m
+[35m│[0m  [92mvisiting that [0m    [35m│[0m
+[35m│[0m  [92mcity on those [0m    [35m│[0m
+[35m│[0m  [92mdates. 3. [0m        [35m│[0m
+[35m│[0m  [92mLOGISTICS: [0m       [35m│[0m
+[35m│[0m  [92mFactor in [0m        [35m│[0m
+[35m│[0m  [92mgeographical [0m     [35m│[0m
+[35m│[0m  [92mproximity to [0m     [35m│[0m
+[35m│[0m  [92mreduce travel [0m    [35m│[0m
+[35m│[0m  [92mtime.[0m             [35m│[0m
+[35m│[0m  [92mProvide a clear [0m  [35m│[0m
+[35m│[0m  [92mrationale for [0m    [35m│[0m
+[35m│[0m  [92mWHY you chose [0m    [35m│[0m
+[35m│[0m  [92mthis specific [0m    [35m│[0m
+[35m│[0m  [92morder (e.g., [0m     [35m│[0m
+[35m│[0m  [92m'Visiting City A[0m  [35m│[0m
+[35m│[0m  [92mfirst saves $200[0m  [35m│[0m
+[35m│[0m  [92min flights' or [0m   [35m│[0m
+[35m│[0m  [92m'City B has a [0m    [35m│[0m
+[35m│[0m  [92mfestival on day [0m  [35m│[0m
+[35m│[0m  [92m2').[0m              [35m│[0m
+[35m│[0m                    [35m│[0m
+[35m│[0m                    [35m│[0m
+[35m╰────────────────────╯[0m
+
+[32m╭─[0m[32m ✅ Agent Final An[0m[32m─╮[0m
+[32m│[0m                    [32m│[0m
+[32m│[0m  [37mAgent: [0m[1;92mTravel [0m    [32m│[0m
+[32m│[0m  [1;92mCoordinator & [0m    [32m│[0m
+[32m│[0m  [1;92mRoute Optimizer[0m   [32m│[0m
+[32m│[0m                    [32m│[0m
+[32m│[0m  [37mFinal Answer:[0m     [32m│[0m
+[32m│[0m  [92m**Destination:**[0m  [32m│[0m
+[32m│[0m  [92mJaipur[0m            [32m│[0m
+[32m│[0m                    [32m│[0m
+[32m│[0m  [92m**Optimized [0m      [32m│[0m
+[32m│[0m  [92mRoute [0m            [32m│[0m
+[32m│[0m  [92mSequence:**[0m       [32m│[0m
+[32m│[0m                    [32m│[0m
+[32m│[0m  [92mBased on our [0m     [32m│[0m
+[32m│[0m  [92manalysis of [0m      [32m│[0m
+[32m│[0m  [92mbudget, events, [0m  [32m│[0m
+[32m│[0m  [92mand logistics, [0m   [32m│[0m
+[32m│[0m  [92mwe recommend [0m     [32m│[0m
+[32m│[0m  [92mvisiting the [0m     [32m│[0m
+[32m│[0m  [92mfollowing cities[0m  [32m│[0m
+[32m│[0m  [92min the specified[0m  [32m│[0m
+[32m│[0m  [92morder:[0m            [32m│[0m
+[32m│[0m                    [32m│[0m
+[32m│[0m  [92m1. **Jaipur**[0m     [32m│[0m
+[32m│[0m  [92m2. **Other [0m       [32m│[0m
+[32m│[0m  [92mnearby [0m           [32m│[0m
+[32m│[0m  [92mdestinations (if[0m  [32m│[0m
+[32m│[0m  [92many)**[0m            [32m│[0m
+[32m│[0m                    [32m│[0m
+[32m│[0m  [92m**Detailed [0m       [32m│[0m
+[32m│[0m  [92mExplanation:**[0m    [32m│[0m
+[32m│[0m                    [32m│[0m
+[32m│[0m  [92m1. **Jaipur [0m      [32m│[0m
+[32m│[0m  [92m(First [0m           [32m│[0m
+[32m│[0m  [92mDestination):** [0m  [32m│[0m
+[32m│[0m  [92m   - **Budget:**[0m  [32m│[0m
+[32m│[0m  [92mAs the primary [0m   [32m│[0m
+[32m│[0m  [92mdestination, we [0m  [32m│[0m
+[32m│[0m  [92mdon't incur [0m      [32m│[0m
+[32m│[0m  [92madditional [0m       [32m│[0m
+[32m│[0m  [92mtravel costs for[0m  [32m│[0m
+[32m│[0m  [92mthis leg of the [0m  [32m│[0m
+[32m│[0m  [92mtrip.[0m             [32m│[0m
+[32m│[0m  [92m   - **Events:**[0m  [32m│[0m
+[32m│[0m  [92mNo [0m               [32m│[0m
+[32m│[0m  [92mtime-sensitive [0m   [32m│[0m
+[32m│[0m  [92mevents have been[0m  [32m│[0m
+[32m│[0m  [92midentified [0m       [32m│[0m
+[32m│[0m  [92mbetween [0m          [32m│[0m
+[32m│[0m  [92m2025-02-10 and [0m   [32m│[0m
+[32m│[0m  [92m2025-02-13 for [0m   [32m│[0m
+[32m│[0m  [92mJaipur.[0m           [32m│[0m
+[32m│[0m  [92m   - [0m             [32m│[0m
+[32m│[0m  [92m**Logistics:** [0m   [32m│[0m
+[32m│[0m  [92mGiven that [0m       [32m│[0m
+[32m│[0m  [92mJaipur is a [0m      [32m│[0m
+[32m│[0m  [92mprimary [0m          [32m│[0m
+[32m│[0m  [92mdestination and [0m  [32m│[0m
+[32m│[0m  [92mlikely the [0m       [32m│[0m
+[32m│[0m  [92mstarting point [0m   [32m│[0m
+[32m│[0m  [92mof the trip, we [0m  [32m│[0m
+[32m│[0m  [92mprioritize this [0m  [32m│[0m
+[32m│[0m  [92mdestination.[0m      [32m│[0m
+[32m│[0m                    [32m│[0m
+[32m│[0m  [92m2. **Other [0m       [32m│[0m
+[32m│[0m  [92mnearby [0m           [32m│[0m
+[32m│[0m  [92mdestinations (if[0m  [32m│[0m
+[32m│[0m  [92many):**[0m           [32m│[0m
+[32m│[0m  [92m   - **Budget:**[0m  [32m│[0m
+[32m│[0m  [92mAssuming we have[0m  [32m│[0m
+[32m│[0m  [92mnearby [0m           [32m│[0m
+[32m│[0m  [92mdestinations to [0m  [32m│[0m
+[32m│[0m  [92mJaipur that [0m      [32m│[0m
+[32m│[0m  [92mcould be [0m         [32m│[0m
+[32m│[0m  [92mincluded in the [0m  [32m│[0m
+[32m│[0m  [92mtrip, we would [0m   [32m│[0m
+[32m│[0m  [92mlook to save on [0m  [32m│[0m
+[32m│[0m  [92mtravel expenses [0m  [32m│[0m
+[32m│[0m  [92mfor these [0m        [32m│[0m
+[32m│[0m  [92mdestinations as [0m  [32m│[0m
+[32m│[0m  [92mtheir proximity [0m  [32m│[0m
+[32m│[0m  [92mto Jaipur [0m        [32m│[0m
+[32m│[0m  [92mreduces the need[0m  [32m│[0m
+[32m│[0m  [92mfor extended or [0m  [32m│[0m
+[32m│[0m  [92mexpensive [0m        [32m│[0m
+[32m│[0m  [92mtravel.[0m           [32m│[0m
+[32m│[0m  [92m   - **Events:**[0m  [32m│[0m
+[32m│[0m  [92mWe would [0m         [32m│[0m
+[32m│[0m  [92midentify nearby [0m  [32m│[0m
+[32m│[0m  [92mdestinations [0m     [32m│[0m
+[32m│[0m  [92mwith upcoming [0m    [32m│[0m
+[32m│[0m  [92mevents, [0m          [32m│[0m
+[32m│[0m  [92mfestivals, or [0m    [32m│[0m
+[32m│[0m  [92m"good things [0m     [32m│[0m
+[32m│[0m  [92mhappening" [0m       [32m│[0m
+[32m│[0m  [92mwithin the [0m       [32m│[0m
+[32m│[0m  [92mspecified dates [0m  [32m│[0m
+[32m│[0m  [92mand prioritize [0m   [32m│[0m
+[32m│[0m  [92mthese cities in [0m  [32m│[0m
+[32m│[0m  [92mthe sequence.[0m     [32m│[0m
+[32m│[0m  [92m   - [0m             [32m│[0m
+[32m│[0m  [92m**Logistics:** [0m   [32m│[0m
+[32m│[0m  [92mConsidering [0m      [32m│[0m
+[32m│[0m  [92mgeographical [0m     [32m│[0m
+[32m│[0m  [92mproximity to [0m     [32m│[0m
+[32m│[0m  [92mminimize travel [0m  [32m│[0m
+[32m│[0m  [92mtime, nearby [0m     [32m│[0m
+[32m│[0m  [92mdestinations [0m     [32m│[0m
+[32m│[0m  [92mwould save us [0m    [32m│[0m
+[32m│[0m  [92mfrom having to [0m   [32m│[0m
+[32m│[0m  [92mspend extensive [0m  [32m│[0m
+[32m│[0m  [92mtime and money [0m   [32m│[0m
+[32m│[0m  [92mon long-distance[0m  [32m│[0m
+[32m│[0m  [92mflights or [0m       [32m│[0m
+[32m│[0m  [92mtravel.[0m           [32m│[0m
+[32m│[0m                    [32m│[0m
+[32m│[0m  [92m**Additional [0m     [32m│[0m
+[32m│[0m  [92mInformation:**[0m    [32m│[0m
+[32m│[0m                    [32m│[0m
+[32m│[0m  [92mTo optimize the [0m  [32m│[0m
+[32m│[0m  [92mtrip, we have [0m    [32m│[0m
+[32m│[0m  [92mconsidered the [0m   [32m│[0m
+[32m│[0m  [92mfollowing:[0m        [32m│[0m
+[32m│[0m                    [32m│[0m
+[32m│[0m  [92m- Estimated [0m      [32m│[0m
+[32m│[0m  [92mtravel costs [0m     [32m│[0m
+[32m│[0m  [92mhave been [0m        [32m│[0m
+[32m│[0m  [92mcalculated, and [0m  [32m│[0m
+[32m│[0m  [92msince the source[0m  [32m│[0m
+[32m│[0m  [92mand destination [0m  [32m│[0m
+[32m│[0m  [92mare the same [0m     [32m│[0m
+[32m│[0m  [92m(Delhi), we have[0m  [32m│[0m
+[32m│[0m  [92mset the travel [0m   [32m│[0m
+[32m│[0m  [92mcost to 0 for a [0m  [32m│[0m
+[32m│[0m  [92mround trip.[0m       [32m│[0m
+[32m│[0m  [92m- The daily [0m      [32m│[0m
+[32m│[0m  [92mspend per person[0m  [32m│[0m
+[32m│[0m  [92mis higher than [0m   [32m│[0m
+[32m│[0m  [92mthe specified [0m    [32m│[0m
+[32m│[0m  [92mlimit, [0m           [32m│[0m
+[32m│[0m  [92mindicating that [0m  [32m│[0m
+[32m│[0m  [92mthis trip is not[0m  [32m│[0m
+[32m│[0m  [92mfeasible.[0m         [32m│[0m
+[32m│[0m                    [32m│[0m
+[32m│[0m  [92m**JSON [0m           [32m│[0m
+[32m│[0m  [92mResponse:**[0m       [32m│[0m
+[32m│[0m                    [32m│[0m
+[32m│[0m  [92m```json[0m           [32m│[0m
+[32m│[0m  [92m{[0m                 [32m│[0m
+[32m│[0m  [92m  "is_feasible":[0m  [32m│[0m
+[32m│[0m  [92mfalse,[0m            [32m│[0m
+[32m│[0m  [92m  "reason": "The[0m  [32m│[0m
+[32m│[0m  [92mdaily spend per [0m  [32m│[0m
+[32m│[0m  [92mperson is less [0m   [32m│[0m
+[32m│[0m  [92mthan the minimum[0m  [32m│[0m
+[32m│[0m  [92mrequired budget [0m  [32m│[0m
+[32m│[0m  [92mof 2000 INR.",[0m    [32m│[0m
+[32m│[0m  [92m  "estimated_tra[0m  [32m│[0m
+[32m│[0m  [92mvel_cost": 0,[0m     [32m│[0m
+[32m│[0m  [92m  "daily_spend_p[0m  [32m│[0m
+[32m│[0m  [92mer_person": [0m      [32m│[0m
+[32m│[0m  [92m8333.33,[0m          [32m│[0m
+[32m│[0m  [92m  "message": [0m     [32m│[0m
+[32m│[0m  [92m"Unfortunately, [0m  [32m│[0m
+[32m│[0m  [92mthis trip is not[0m  [32m│[0m
+[32m│[0m  [92mfinancially [0m      [32m│[0m
+[32m│[0m  [92mfeasible with [0m    [32m│[0m
+[32m│[0m  [92myour given [0m       [32m│[0m
+[32m│[0m  [92mbudget and [0m       [32m│[0m
+[32m│[0m  [92mtravel plans."[0m    [32m│[0m
+[32m│[0m  [92m}[0m                 [32m│[0m
+[32m│[0m  [92m```[0m               [32m│[0m
+[32m│[0m                    [32m│[0m
+[32m╰────────────────────╯[0m
+
+
+[Rate Limit Protection] Sleeping for 60 seconds to reset TPM quota...
+
+[32m╭─[0m[32m─[0m[32m 📋 Task Completion [0m[32m──[0m[32m─╮[0m
+[32m│[0m                         [32m│[0m
+[32m│[0m  [1;32mTask Completed[0m         [32m│[0m
+[32m│[0m  [37mName: [0m                 [32m│[0m
+[32m│[0m  [32midentify_optimal_rout[0m  [32m│[0m
+[32m│[0m  [32me_task[0m                 [32m│[0m
+[32m│[0m  [37mAgent: [0m                [32m│[0m
+[32m│[0m  [32mTravel Coordinator & [0m  [32m│[0m
+[32m│[0m  [32mRoute Optimizer[0m        [32m│[0m
+[32m│[0m                         [32m│[0m
+[32m│[0m                         [32m│[0m
+[32m│[0m                         [32m│[0m
+[32m╰─────────────────────────╯[0m
+
+[33m╭─[0m[33m───[0m[33m 📋 Task Started [0m[33m───[0m[33m─╮[0m
+[33m│[0m                         [33m│[0m
+[33m│[0m  [1;33mTask Started[0m           [33m│[0m
+[33m│[0m  [37mName: [0m                 [33m│[0m
+[33m│[0m  [33mplan_multi_city_itine[0m  [33m│[0m
+[33m│[0m  [33mrary_task[0m              [33m│[0m
+[33m│[0m  [37mID: [0m                   [33m│[0m
+[33m│[0m  [33mab173027-0f72-4ffe-a3[0m  [33m│[0m
+[33m│[0m  [33ma4-c016f77f22ce[0m        [33m│[0m
+[33m│[0m                         [33m│[0m
+[33m│[0m                         [33m│[0m
+[33m╰─────────────────────────╯[0m
+
+[35m╭─[0m[35m──[0m[35m 🤖 Agent Started [0m[35m───[0m[35m─╮[0m
+[35m│[0m                         [35m│[0m
+[35m│[0m  [37mAgent: [0m[1;92mItinerary [0m      [35m│[0m
+[35m│[0m  [1;92mSpecialist[0m             [35m│[0m
+[35m│[0m                         [35m│[0m
+[35m│[0m  [37mTask: [0m[92mBased on the [0m    [35m│[0m
+[35m│[0m  [92mOPTIMAL ROUTE [0m         [35m│[0m
+[35m│[0m  [92mprovided in the [0m       [35m│[0m
+[35m│[0m  [92mprevious task, create[0m  [35m│[0m
+[35m│[0m  [92ma comprehensive [0m       [35m│[0m
+[35m│[0m  [92mday-by-day itinerary [0m  [35m│[0m
+[35m│[0m  [92mthat covers ALL [0m       [35m│[0m
+[35m│[0m  [92mcities listed. Do not[0m  [35m│[0m
+[35m│[0m  [92mskip any city. Ensure[0m  [35m│[0m
+[35m│[0m  [92msmooth transitions [0m    [35m│[0m
+[35m│[0m  [92mbetween cities and [0m    [35m│[0m
+[35m│[0m  [92minclude suggested [0m     [35m│[0m
+[35m│[0m  [92mtransport modes. [0m      [35m│[0m
+[35m│[0m  [92mNote: 3 is the total [0m  [35m│[0m
+[35m│[0m  [92mtrip duration, [0m        [35m│[0m
+[35m│[0m  [92mdistribute days [0m       [35m│[0m
+[35m│[0m  [92mwisely among cities.[0m   [35m│[0m
+[35m│[0m                         [35m│[0m
+[35m│[0m                         [35m│[0m
+[35m╰─────────────────────────╯[0m
+
+[32m╭─[0m[32m ✅ Agent Final Answer [0m[32m─╮[0m
+[32m│[0m                         [32m│[0m
+[32m│[0m  [37mAgent: [0m[1;92mItinerary [0m      [32m│[0m
+[32m│[0m  [1;92mSpecialist[0m             [32m│[0m
+[32m│[0m                         [32m│[0m
+[32m│[0m  [37mFinal Answer:[0m          [32m│[0m
+[32m│[0m  [92m**Trip Itinerary for [0m  [32m│[0m
+[32m│[0m  [92mDestination: Jaipur**[0m  [32m│[0m
+[32m│[0m                         [32m│[0m
+[32m│[0m  [92m**Optimized Route [0m     [32m│[0m
+[32m│[0m  [92mSequence:** [0m           [32m│[0m
+[32m│[0m  [92m1. **Jaipur**[0m          [32m│[0m
+[32m│[0m  [92m2. **Ajmer** (Other [0m   [32m│[0m
+[32m│[0m  [92mnearby destination)[0m    [32m│[0m
+[32m│[0m                         [32m│[0m
+[32m│[0m  [92m**Day 1: Arrival in [0m   [32m│[0m
+[32m│[0m  [92mJaipur (2025-02-10)**[0m  [32m│[0m
+[32m│[0m                         [32m│[0m
+[32m│[0m  [92m- Arrive at Jaipur [0m    [32m│[0m
+[32m│[0m  [92mInternational Airport[0m  [32m│[0m
+[32m│[0m  [92mor the nearest [0m        [32m│[0m
+[32m│[0m  [92mrailhead.[0m              [32m│[0m
+[32m│[0m  [92m- Check-in at a hotel[0m  [32m│[0m
+[32m│[0m  [92min the heart of the [0m   [32m│[0m
+[32m│[0m  [92mcity, preferably near[0m  [32m│[0m
+[32m│[0m  [92mthe main attractions.[0m  [32m│[0m
+[32m│[0m  [92m- Visit Hawa Mahal [0m    [32m│[0m
+[32m│[0m  [92m(Wind Palace), a [0m      [32m│[0m
+[32m│[0m  [92mstunning example of [0m   [32m│[0m
+[32m│[0m  [92mRajput architecture.[0m   [32m│[0m
+[32m│[0m  [92m- Explore the nearby [0m  [32m│[0m
+[32m│[0m  [92mJohari Bazaar, a [0m      [32m│[0m
+[32m│[0m  [92msignificant [0m           [32m│[0m
+[32m│[0m  [92mmarketplace for [0m       [32m│[0m
+[32m│[0m  [92mvarious commodities.[0m   [32m│[0m
+[32m│[0m                         [32m│[0m
+[32m│[0m  [92m**Day 2: Jaipur [0m       [32m│[0m
+[32m│[0m  [92m(2025-02-11)**[0m         [32m│[0m
+[32m│[0m                         [32m│[0m
+[32m│[0m  [92m- Start the day with [0m  [32m│[0m
+[32m│[0m  [92ma visit to Amber [0m      [32m│[0m
+[32m│[0m  [92mFort, the majestic [0m    [32m│[0m
+[32m│[0m  [92mfort located on a [0m     [32m│[0m
+[32m│[0m  [92mhilltop.[0m               [32m│[0m
+[32m│[0m  [92m- Take an Elephant [0m    [32m│[0m
+[32m│[0m  [92mSafari to the fort [0m    [32m│[0m
+[32m│[0m  [92mfor a unique [0m          [32m│[0m
+[32m│[0m  [92mexperience.[0m            [32m│[0m
+[32m│[0m  [92m- Visit the City [0m      [32m│[0m
+[32m│[0m  [92mPalace, a stunning [0m    [32m│[0m
+[32m│[0m  [92mexample of Rajput [0m     [32m│[0m
+[32m│[0m  [92marchitecture that [0m     [32m│[0m
+[32m│[0m  [92mhouses several [0m        [32m│[0m
+[32m│[0m  [92mmuseums and a temple.[0m  [32m│[0m
+[32m│[0m  [92m- Explore the nearby [0m  [32m│[0m
+[32m│[0m  [92mJantar Mantar, a [0m      [32m│[0m
+[32m│[0m  [92mUNESCO World Heritage[0m  [32m│[0m
+[32m│[0m  [92mSite.[0m                  [32m│[0m
+[32m│[0m                         [32m│[0m
+[32m│[0m  [92m**Day 3: Discover [0m     [32m│[0m
+[32m│[0m  [92mother nearby [0m          [32m│[0m
+[32m│[0m  [92mdestinations [0m          [32m│[0m
+[32m│[0m  [92m(2025-02-12)**[0m         [32m│[0m
+[32m│[0m                         [32m│[0m
+[32m│[0m  [92m- Travel to Ajmer [0m     [32m│[0m
+[32m│[0m  [92m(approximately 1 hour[0m  [32m│[0m
+[32m│[0m  [92mby car or 1.5 hours [0m   [32m│[0m
+[32m│[0m  [92mby train), another [0m    [32m│[0m
+[32m│[0m  [92mnearby destination in[0m  [32m│[0m
+[32m│[0m  [92mRajasthan.[0m             [32m│[0m
+[32m│[0m  [92m- Visit the Ajmer [0m     [32m│[0m
+[32m│[0m  [92mSharif Dargah, a [0m      [32m│[0m
+[32m│[0m  [92mprominent Sufi shrine[0m  [32m│[0m
+[32m│[0m  [92mand a significant [0m     [32m│[0m
+[32m│[0m  [92mpilgrimage center for[0m  [32m│[0m
+[32m│[0m  [92mMuslims across India.[0m  [32m│[0m
+[32m│[0m  [92m- Explore the nearby [0m  [32m│[0m
+[32m│[0m  [92mAnasagar Lake, a [0m      [32m│[0m
+[32m│[0m  [92mpicturesque spot that[0m  [32m│[0m
+[32m│[0m  [92mcombines scenic [0m       [32m│[0m
+[32m│[0m  [92mbeauty with [0m           [32m│[0m
+[32m│[0m  [92mhistorical [0m            [32m│[0m
+[32m│[0m  [92msignificance.[0m          [32m│[0m
+[32m│[0m  [92m- Visit the Taragarh [0m  [32m│[0m
+[32m│[0m  [92mFort, the ancient [0m     [32m│[0m
+[32m│[0m  [92mfortress of Ajmer, [0m    [32m│[0m
+[32m│[0m  [92moffering breathtaking[0m  [32m│[0m
+[32m│[0m  [92mvistas of the city.[0m    [32m│[0m
+[32m│[0m                         [32m│[0m
+[32m│[0m  [92m**Day 4: Return to [0m    [32m│[0m
+[32m│[0m  [92mJaipur (2025-02-13)**[0m  [32m│[0m
+[32m│[0m                         [32m│[0m
+[32m│[0m  [92m- Return to Jaipur [0m    [32m│[0m
+[32m│[0m  [92m(approximately 1 hour[0m  [32m│[0m
+[32m│[0m  [92mby car or 1.5 hours [0m   [32m│[0m
+[32m│[0m  [92mby train) to spend [0m    [32m│[0m
+[32m│[0m  [92mthe day exploring any[0m  [32m│[0m
+[32m│[0m  [92mattractions you [0m       [32m│[0m
+[32m│[0m  [92mmissed earlier.[0m        [32m│[0m
+[32m│[0m  [92m- Visit the Bapu [0m      [32m│[0m
+[32m│[0m  [92mBazaar, popular for [0m   [32m│[0m
+[32m│[0m  [92mits textile market, [0m   [32m│[0m
+[32m│[0m  [92mor the Sanganeri Gate[0m  [32m│[0m
+[32m│[0m  [92marea for local [0m        [32m│[0m
+[32m│[0m  [92mshopping.[0m              [32m│[0m
+[32m│[0m                         [32m│[0m
+[32m│[0m  [92m**Transport Mode:**[0m    [32m│[0m
+[32m│[0m                         [32m│[0m
+[32m│[0m  [92m- Between Jaipur and [0m  [32m│[0m
+[32m│[0m  [92mAjmer: We recommend [0m   [32m│[0m
+[32m│[0m  [92mcar (1 hour) or train[0m  [32m│[0m
+[32m│[0m  [92m(1.5 hours) travel.[0m    [32m│[0m
+[32m│[0m                         [32m│[0m
+[32m│[0m  [92m**Additional Notes:**[0m  [32m│[0m
+[32m│[0m                         [32m│[0m
+[32m│[0m  [92m- Accommodations will[0m  [32m│[0m
+[32m│[0m  [92mbe booked in Jaipur, [0m  [32m│[0m
+[32m│[0m  [92mand then in Ajmer for[0m  [32m│[0m
+[32m│[0m  [92mDay 3, as mentioned [0m   [32m│[0m
+[32m│[0m  [92min the itinerary.[0m      [32m│[0m
+[32m│[0m  [92m- The estimated [0m       [32m│[0m
+[32m│[0m  [92mtravel time and costs[0m  [32m│[0m
+[32m│[0m  [92mare based on a [0m        [32m│[0m
+[32m│[0m  [92mround-trip to the [0m     [32m│[0m
+[32m│[0m  [92msame city (Delhi to [0m   [32m│[0m
+[32m│[0m  [92mDelhi) with 0 travel [0m  [32m│[0m
+[32m│[0m  [92mcost due to source [0m    [32m│[0m
+[32m│[0m  [92mand destination being[0m  [32m│[0m
+[32m│[0m  [92mthe same.[0m              [32m│[0m
+[32m│[0m  [92m- Considering the [0m     [32m│[0m
+[32m│[0m  [92mestimated daily spend[0m  [32m│[0m
+[32m│[0m  [92mand travel costs, [0m     [32m│[0m
+[32m│[0m  [92mthis trip is not [0m      [32m│[0m
+[32m│[0m  [92mfeasible.[0m              [32m│[0m
+[32m│[0m                         [32m│[0m
+[32m│[0m  [92mPlease note that the [0m  [32m│[0m
+[32m│[0m  [92mfinal itinerary is [0m    [32m│[0m
+[32m│[0m  [92msubject to revision [0m   [32m│[0m
+[32m│[0m  [92mbased on your [0m         [32m│[0m
+[32m│[0m  [92mpersonal preferences [0m  [32m│[0m
+[32m│[0m  [92mand time constraints.[0m  [32m│[0m
+[32m│[0m  [92mIt is recommended to [0m  [32m│[0m
+[32m│[0m  [92mcheck the best [0m        [32m│[0m
+[32m│[0m  [92mroutes, accommodation[0m  [32m│[0m
+[32m│[0m  [92moptions, and travel [0m   [32m│[0m
+[32m│[0m  [92mtimes to customize [0m    [32m│[0m
+[32m│[0m  [92mthis itinerary [0m        [32m│[0m
+[32m│[0m  [92maccording to your [0m     [32m│[0m
+[32m│[0m  [92mrequirements.[0m          [32m│[0m
+[32m│[0m                         [32m│[0m
+[32m╰─────────────────────────╯[0m
+
+
+[Rate Limit Protection] Sleeping for 60 seconds to reset TPM quota...
+
+[32m╭─[0m[32m─[0m[32m 📋 Task Completion [0m[32m──[0m[32m─╮[0m
+[32m│[0m                         [32m│[0m
+[32m│[0m  [1;32mTask Completed[0m         [32m│[0m
+[32m│[0m  [37mName: [0m                 [32m│[0m
+[32m│[0m  [32mplan_multi_city_itine[0m  [32m│[0m
+[32m│[0m  [32mrary_task[0m              [32m│[0m
+[32m│[0m  [37mAgent: [0m                [32m│[0m
+[32m│[0m  [32mItinerary Specialist[0m   [32m│[0m
+[32m│[0m                         [32m│[0m
+[32m│[0m                         [32m│[0m
+[32m│[0m                         [32m│[0m
+[32m╰─────────────────────────╯[0m
+
+[33m╭─[0m[33m───[0m[33m 📋 Task Started [0m[33m───[0m[33m─╮[0m
+[33m│[0m                         [33m│[0m
+[33m│[0m  [1;33mTask Started[0m           [33m│[0m
+[33m│[0m  [37mName: [0m[33menrichment_task[0m  [33m│[0m
+[33m│[0m  [37mID: [0m                   [33m│[0m
+[33m│[0m  [33mcd28a643-5b04-4892-a2[0m  [33m│[0m
+[33m│[0m  [33m52-d87c7813e9b3[0m        [33m│[0m
+[33m│[0m                         [33m│[0m
+[33m│[0m                         [33m│[0m
+[33m╰─────────────────────────╯[0m
+
+[35m╭─[0m[35m──[0m[35m 🤖 Agent Started [0m[35m───[0m[35m─╮[0m
+[35m│[0m                         [35m│[0m
+[35m│[0m  [37mAgent: [0m[1;92mExperience [0m     [35m│[0m
+[35m│[0m  [1;92mCurator[0m                [35m│[0m
+[35m│[0m                         [35m│[0m
+[35m│[0m  [37mTask: [0m[92mSTEP 1: Check [0m   [35m│[0m
+[35m│[0m  [92mthe [0m                   [35m│[0m
+[35m│[0m  [92m'feasibility_check' [0m   [35m│[0m
+[35m│[0m  [92moutput. IF [0m            [35m│[0m
+[35m│[0m  [92m'is_feasible' is [0m      [35m│[0m
+[35m│[0m  [92mfalse, RETURN THE [0m     [35m│[0m
+[35m│[0m  [92mERROR JSON [0m            [35m│[0m
+[35m│[0m  [92mimmediately.[0m           [35m│[0m
+[35m│[0m  [92mIF feasible: Take the[0m  [35m│[0m
+[35m│[0m  [92mrough route provided [0m  [35m│[0m
+[35m│[0m  [92mby the Route Planner [0m  [35m│[0m
+[35m│[0m  [92mand fill in specific,[0m  [35m│[0m
+[35m│[0m  [92mengaging activities  [0m  [35m│[0m
+[35m│[0m  [92mthat match the user's[0m  [35m│[0m
+[35m│[0m  [92mTravel Style: [0m         [35m│[0m
+[35m│[0m  [92mLeisure. Use your [0m     [35m│[0m
+[35m│[0m  [92minternal knowledge to[0m  [35m│[0m
+[35m│[0m  [92msuggest highly-rated [0m  [35m│[0m
+[35m│[0m  [92mplaces. Assume [0m        [35m│[0m
+[35m│[0m  [92mtypical weather for [0m   [35m│[0m
+[35m│[0m  [92mthe season.[0m            [35m│[0m
+[35m│[0m                         [35m│[0m
+[35m│[0m                         [35m│[0m
+[35m╰─────────────────────────╯[0m
+
+[32m╭─[0m[32m ✅ Agent Final Answer [0m[32m─╮[0m
+[32m│[0m                         [32m│[0m
+[32m│[0m  [37mAgent: [0m[1;92mExperience [0m     [32m│[0m
+[32m│[0m  [1;92mCurator[0m                [32m│[0m
+[32m│[0m                         [32m│[0m
+[32m│[0m  [37mFinal Answer:[0m          [32m│[0m
+[32m│[0m  [92m```json[0m                [32m│[0m
+[32m│[0m  [92m{[0m                      [32m│[0m
+[32m│[0m  [92m  "is_feasible": [0m      [32m│[0m
+[32m│[0m  [92mfalse,[0m                 [32m│[0m
+[32m│[0m  [92m  "reason": "The [0m      [32m│[0m
+[32m│[0m  [92mdaily spend per [0m       [32m│[0m
+[32m│[0m  [92mperson is less than [0m   [32m│[0m
+[32m│[0m  [92mthe minimum required [0m  [32m│[0m
+[32m│[0m  [92mbudget of 2000 INR.",[0m  [32m│[0m
+[32m│[0m  [92m  "estimated_travel_c[0m  [32m│[0m
+[32m│[0m  [92most": 0,[0m               [32m│[0m
+[32m│[0m  [92m  "daily_spend_per_pe[0m  [32m│[0m
+[32m│[0m  [92mrson": 8333.33,[0m        [32m│[0m
+[32m│[0m  [92m  "message": [0m          [32m│[0m
+[32m│[0m  [92m"Unfortunately, this [0m  [32m│[0m
+[32m│[0m  [92mtrip is not [0m           [32m│[0m
+[32m│[0m  [92mfinancially feasible [0m  [32m│[0m
+[32m│[0m  [92mwith your given [0m       [32m│[0m
+[32m│[0m  [92mbudget and travel [0m     [32m│[0m
+[32m│[0m  [92mplans.",[0m               [32m│[0m
+[32m│[0m  [92m  "error": "Since the[0m  [32m│[0m
+[32m│[0m  [92mdaily spend per [0m       [32m│[0m
+[32m│[0m  [92mperson (8333.33 INR) [0m  [32m│[0m
+[32m│[0m  [92mis less than the [0m      [32m│[0m
+[32m│[0m  [92mspecified limit (2000[0m  [32m│[0m
+[32m│[0m  [92mINR), this trip is [0m    [32m│[0m
+[32m│[0m  [92mnot feasible."[0m         [32m│[0m
+[32m│[0m  [92m}[0m                      [32m│[0m
+[32m│[0m  [92m```[0m                    [32m│[0m
+[32m│[0m                         [32m│[0m
+[32m╰─────────────────────────╯[0m
+
+
+[Rate Limit Protection] Sleeping for 60 seconds to reset TPM quota...
+
+[32m╭─[0m[32m─[0m[32m 📋 Task Completion [0m[32m──[0m[32m─╮[0m
+[32m│[0m                         [32m│[0m
+[32m│[0m  [1;32mTask Completed[0m         [32m│[0m
+[32m│[0m  [37mName: [0m                 [32m│[0m
+[32m│[0m  [32menrichment_task[0m        [32m│[0m
+[32m│[0m  [37mAgent: [0m                [32m│[0m
+[32m│[0m  [32mExperience Curator[0m     [32m│[0m
+[32m│[0m                         [32m│[0m
+[32m│[0m                         [32m│[0m
+[32m│[0m                         [32m│[0m
+[32m╰─────────────────────────╯[0m
+
+[33m╭─[0m[33m───[0m[33m 📋 Task Started [0m[33m───[0m[33m─╮[0m
+[33m│[0m                         [33m│[0m
+[33m│[0m  [1;33mTask Started[0m           [33m│[0m
+[33m│[0m  [37mName: [0m[33mhotel_task[0m       [33m│[0m
+[33m│[0m  [37mID: [0m                   [33m│[0m
+[33m│[0m  [33mea195785-97c8-4ff3-99[0m  [33m│[0m
+[33m│[0m  [33m72-6e51e4730db6[0m        [33m│[0m
+[33m│[0m                         [33m│[0m
+[33m│[0m                         [33m│[0m
+[33m╰─────────────────────────╯[0m
+
+[35m╭─[0m[35m──[0m[35m 🤖 Agent Started [0m[35m───[0m[35m─╮[0m
+[35m│[0m                         [35m│[0m
+[35m│[0m  [37mAgent: [0m[1;92mHotel Scout[0m     [35m│[0m
+[35m│[0m                         [35m│[0m
+[35m│[0m  [37mTask: [0m[92mSTEP 1: Check [0m   [35m│[0m
+[35m│[0m  [92mthe [0m                   [35m│[0m
+[35m│[0m  [92m'feasibility_check' [0m   [35m│[0m
+[35m│[0m  [92moutput. IF [0m            [35m│[0m
+[35m│[0m  [92m'is_feasible' is [0m      [35m│[0m
+[35m│[0m  [92mfalse, RETURN THE [0m     [35m│[0m
+[35m│[0m  [92mERROR JSON [0m            [35m│[0m
+[35m│[0m  [92mimmediately.[0m           [35m│[0m
+[35m│[0m  [92mIF feasible: Search [0m   [35m│[0m
+[35m│[0m  [92mfor and list at least[0m  [35m│[0m
+[35m│[0m  [92m5 distinct [0m            [35m│[0m
+[35m│[0m  [92maccommodation options[0m  [35m│[0m
+[35m│[0m  [92min Jaipur. Include a [0m  [35m│[0m
+[35m│[0m  [92mmix of ratings and [0m    [35m│[0m
+[35m│[0m  [92mprice points (Budget,[0m  [35m│[0m
+[35m│[0m  [92mMid-range, Luxury) if[0m  [35m│[0m
+[35m│[0m  [92mappropriate for the [0m   [35m│[0m
+[35m│[0m  [92mdestination. For each[0m  [35m│[0m
+[35m│[0m  [92mhotel, provide: Name,[0m  [35m│[0m
+[35m│[0m  [92mAddress, Rating, [0m      [35m│[0m
+[35m│[0m  [92mEstimated Price, [0m      [35m│[0m
+[35m│[0m  [92mAmenities.[0m             [35m│[0m
+[35m│[0m                         [35m│[0m
+[35m│[0m                         [35m│[0m
+[35m╰─────────────────────────╯[0m
+
+[32m╭─[0m[32m ✅ Agent Final Answer [0m[32m─╮[0m
+[32m│[0m                         [32m│[0m
+[32m│[0m  [37mAgent: [0m[1;92mHotel Scout[0m     [32m│[0m
+[32m│[0m                         [32m│[0m
+[32m│[0m  [37mFinal Answer:[0m          [32m│[0m
+[32m│[0m  [92m```json[0m                [32m│[0m
+[32m│[0m  [92m{[0m                      [32m│[0m
+[32m│[0m  [92m  "is_feasible": [0m      [32m│[0m
+[32m│[0m  [92mfalse,[0m                 [32m│[0m
+[32m│[0m  [92m  "reason": "The [0m      [32m│[0m
+[32m│[0m  [92mdaily spend per [0m       [32m│[0m
+[32m│[0m  [92mperson is less than [0m   [32m│[0m
+[32m│[0m  [92mthe minimum required [0m  [32m│[0m
+[32m│[0m  [92mbudget of 2000 INR.",[0m  [32m│[0m
+[32m│[0m  [92m  "estimated_travel_c[0m  [32m│[0m
+[32m│[0m  [92most": 0,[0m               [32m│[0m
+[32m│[0m  [92m  "daily_spend_per_pe[0m  [32m│[0m
+[32m│[0m  [92mrson": 8333.33,[0m        [32m│[0m
+[32m│[0m  [92m  "message": [0m          [32m│[0m
+[32m│[0m  [92m"Unfortunately, this [0m  [32m│[0m
+[32m│[0m  [92mtrip is not [0m           [32m│[0m
+[32m│[0m  [92mfinancially feasible [0m  [32m│[0m
+[32m│[0m  [92mwith your given [0m       [32m│[0m
+[32m│[0m  [92mbudget and travel [0m     [32m│[0m
+[32m│[0m  [92mplans."[0m                [32m│[0m
+[32m│[0m  [92m}[0m                      [32m│[0m
+[32m│[0m  [92m```[0m                    [32m│[0m
+[32m│[0m                         [32m│[0m
+[32m│[0m  [92mIn this case, we were[0m  [32m│[0m
+[32m│[0m  [92munable to proceed [0m     [32m│[0m
+[32m│[0m  [92mfurther with the task[0m  [32m│[0m
+[32m│[0m  [92mas the feasibility [0m    [32m│[0m
+[32m│[0m  [92mcheck has failed.[0m      [32m│[0m
+[32m│[0m                         [32m│[0m
+[32m╰─────────────────────────╯[0m
+
+
+[Rate Limit Protection] Sleeping for 60 seconds to reset TPM quota...
+
+[32m╭─[0m[32m─[0m[32m 📋 Task Completion [0m[32m──[0m[32m─╮[0m
+[32m│[0m                         [32m│[0m
+[32m│[0m  [1;32mTask Completed[0m         [32m│[0m
+[32m│[0m  [37mName: [0m                 [32m│[0m
+[32m│[0m  [32mhotel_task[0m             [32m│[0m
+[32m│[0m  [37mAgent: [0m                [32m│[0m
+[32m│[0m  [32mHotel Scout[0m            [32m│[0m
+[32m│[0m                         [32m│[0m
+[32m│[0m                         [32m│[0m
+[32m│[0m                         [32m│[0m
+[32m╰─────────────────────────╯[0m
+
+[33m╭─[0m[33m───[0m[33m 📋 Task Started [0m[33m───[0m[33m─╮[0m
+[33m│[0m                         [33m│[0m
+[33m│[0m  [1;33mTask Started[0m           [33m│[0m
+[33m│[0m  [37mName: [0m[33mflight_task[0m      [33m│[0m
+[33m│[0m  [37mID: [0m                   [33m│[0m
+[33m│[0m  [33m42ff6341-d2e0-4e31-96[0m  [33m│[0m
+[33m│[0m  [33m60-b8374de6f69c[0m        [33m│[0m
+[33m│[0m                         [33m│[0m
+[33m│[0m                         [33m│[0m
+[33m╰─────────────────────────╯[0m
+
+[35m╭─[0m[35m──[0m[35m 🤖 Agent Started [0m[35m───[0m[35m─╮[0m
+[35m│[0m                         [35m│[0m
+[35m│[0m  [37mAgent: [0m[1;92mFlight Expert[0m   [35m│[0m
+[35m│[0m                         [35m│[0m
+[35m│[0m  [37mTask: [0m[92mSTEP 1: Check [0m   [35m│[0m
+[35m│[0m  [92mthe [0m                   [35m│[0m
+[35m│[0m  [92m'feasibility_check' [0m   [35m│[0m
+[35m│[0m  [92moutput. IF [0m            [35m│[0m
+[35m│[0m  [92m'is_feasible' is [0m      [35m│[0m
+[35m│[0m  [92mfalse, RETURN THE [0m     [35m│[0m
+[35m│[0m  [92mERROR JSON [0m            [35m│[0m
+[35m│[0m  [92mimmediately.[0m           [35m│[0m
+[35m│[0m  [92mIF feasible: Identify[0m  [35m│[0m
+[35m│[0m  [92mdirect and connecting[0m  [35m│[0m
+[35m│[0m  [92mflight routes to [0m      [35m│[0m
+[35m│[0m  [92mJaipur from Delhi. [0m    [35m│[0m
+[35m│[0m  [92mProvide at least 3 [0m    [35m│[0m
+[35m│[0m  [92mdistinct [0m              [35m│[0m
+[35m│[0m  [92moptions/airlines.[0m      [35m│[0m
+[35m│[0m                         [35m│[0m
+[35m│[0m                         [35m│[0m
+[35m╰─────────────────────────╯[0m
+
+[32m╭─[0m[32m ✅ Agent Final Answer [0m[32m─╮[0m
+[32m│[0m                         [32m│[0m
+[32m│[0m  [37mAgent: [0m[1;92mFlight Expert[0m   [32m│[0m
+[32m│[0m                         [32m│[0m
+[32m│[0m  [37mFinal Answer:[0m          [32m│[0m
+[32m│[0m  [92m{[0m                      [32m│[0m
+[32m│[0m  [92m  "is_feasible": [0m      [32m│[0m
+[32m│[0m  [92mfalse,[0m                 [32m│[0m
+[32m│[0m  [92m  "reason": "The [0m      [32m│[0m
+[32m│[0m  [92mdaily spend per [0m       [32m│[0m
+[32m│[0m  [92mperson is less than [0m   [32m│[0m
+[32m│[0m  [92mthe minimum required [0m  [32m│[0m
+[32m│[0m  [92mbudget of 2000 INR.",[0m  [32m│[0m
+[32m│[0m  [92m  "estimated_travel_c[0m  [32m│[0m
+[32m│[0m  [92most": 0,[0m               [32m│[0m
+[32m│[0m  [92m  "daily_spend_per_pe[0m  [32m│[0m
+[32m│[0m  [92mrson": 8333.33,[0m        [32m│[0m
+[32m│[0m  [92m  "message": [0m          [32m│[0m
+[32m│[0m  [92m"Unfortunately, this [0m  [32m│[0m
+[32m│[0m  [92mtrip is not [0m           [32m│[0m
+[32m│[0m  [92mfinancially feasible [0m  [32m│[0m
+[32m│[0m  [92mwith your given [0m       [32m│[0m
+[32m│[0m  [92mbudget and travel [0m     [32m│[0m
+[32m│[0m  [92mplans."[0m                [32m│[0m
+[32m│[0m  [92m}[0m                      [32m│[0m
+[32m│[0m                         [32m│[0m
+[32m╰─────────────────────────╯[0m
+
+
+[Rate Limit Protection] Sleeping for 60 seconds to reset TPM quota...
+
+[32m╭─[0m[32m─[0m[32m 📋 Task Completion [0m[32m──[0m[32m─╮[0m
+[32m│[0m                         [32m│[0m
+[32m│[0m  [1;32mTask Completed[0m         [32m│[0m
+[32m│[0m  [37mName: [0m                 [32m│[0m
+[32m│[0m  [32mflight_task[0m            [32m│[0m
+[32m│[0m  [37mAgent: [0m                [32m│[0m
+[32m│[0m  [32mFlight Expert[0m          [32m│[0m
+[32m│[0m                         [32m│[0m
+[32m│[0m                         [32m│[0m
+[32m│[0m                         [32m│[0m
+[32m╰─────────────────────────╯[0m
+
+[33m╭─[0m[33m───[0m[33m 📋 Task Started [0m[33m───[0m[33m─╮[0m
+[33m│[0m                         [33m│[0m
+[33m│[0m  [1;33mTask Started[0m           [33m│[0m
+[33m│[0m  [37mName: [0m[33mbudget_task[0m      [33m│[0m
+[33m│[0m  [37mID: [0m                   [33m│[0m
+[33m│[0m  [33m1216af44-95e4-4e6f-bc[0m  [33m│[0m
+[33m│[0m  [33m4f-26c3548369a5[0m        [33m│[0m
+[33m│[0m                         [33m│[0m
+[33m│[0m                         [33m│[0m
+[33m╰─────────────────────────╯[0m
+
+[35m╭─[0m[35m──[0m[35m 🤖 Agent Started [0m[35m───[0m[35m─╮[0m
+[35m│[0m                         [35m│[0m
+[35m│[0m  [37mAgent: [0m[1;92mFinancial [0m      [35m│[0m
+[35m│[0m  [1;92mAdvisor & Gatekeeper[0m   [35m│[0m
+[35m│[0m                         [35m│[0m
+[35m│[0m  [37mTask: [0m[92mSTEP 1: Check [0m   [35m│[0m
+[35m│[0m  [92mthe [0m                   [35m│[0m
+[35m│[0m  [92m'feasibility_check' [0m   [35m│[0m
+[35m│[0m  [92moutput. IF [0m            [35m│[0m
+[35m│[0m  [92m'is_feasible' is [0m      [35m│[0m
+[35m│[0m  [92mfalse:[0m                 [35m│[0m
+[35m│[0m  [92m  Return the EXACT [0m    [35m│[0m
+[35m│[0m  [92mJSON output from the [0m  [35m│[0m
+[35m│[0m  [92mfeasibility_check [0m     [35m│[0m
+[35m│[0m  [92mtask.[0m                  [35m│[0m
+[35m│[0m  [92m  Do NOT change [0m       [35m│[0m
+[35m│[0m  [92manything.[0m              [35m│[0m
+[35m│[0m                         [35m│[0m
+[35m│[0m  [92mIF feasible: Take the[0m  [35m│[0m
+[35m│[0m  [92mdetailed itinerary [0m    [35m│[0m
+[35m│[0m  [92mfrom the Local Guide,[0m  [35m│[0m
+[35m│[0m  [92mhotel options from [0m    [35m│[0m
+[35m│[0m  [92mHotel Scout, and [0m      [35m│[0m
+[35m│[0m  [92mflight options from [0m   [35m│[0m
+[35m│[0m  [92mFlight Expert. 1. [0m     [35m│[0m
+[35m│[0m  [92mConsolidate the [0m       [35m│[0m
+[35m│[0m  [92mflight options and [0m    [35m│[0m
+[35m│[0m  [92mhotel options. 2. [0m     [35m│[0m
+[35m│[0m  [92mEstimate costs for [0m    [35m│[0m
+[35m│[0m  [92meach activity based [0m   [35m│[0m
+[35m│[0m  [92mon typical rates in [0m   [35m│[0m
+[35m│[0m  [92mIndian Rupees (INR). [0m  [35m│[0m
+[35m│[0m  [92m3. Ensure the plan [0m    [35m│[0m
+[35m│[0m  [92mfits within the total[0m  [35m│[0m
+[35m│[0m  [92mbudget: 50000 INR. 4.[0m  [35m│[0m
+[35m│[0m  [92mCompile the FINAL [0m     [35m│[0m
+[35m│[0m  [92mJSON output matching [0m  [35m│[0m
+[35m│[0m  [92mthe structure [0m         [35m│[0m
+[35m│[0m  [92mexactly. 5. For each [0m  [35m│[0m
+[35m│[0m  [92mactivity and hotel, [0m   [35m│[0m
+[35m│[0m  [92minclude a real image [0m  [35m│[0m
+[35m│[0m  [92mURL from your [0m         [35m│[0m
+[35m│[0m  [92mknowledge or search. [0m  [35m│[0m
+[35m│[0m  [92m6. Coordinates MUST [0m   [35m│[0m
+[35m│[0m  [92mbe [latitude, [0m         [35m│[0m
+[35m│[0m  [92mlongitude] numbers.[0m    [35m│[0m
+[35m│[0m                         [35m│[0m
+[35m│[0m                         [35m│[0m
+[35m╰─────────────────────────╯[0m
+
+[32m╭─[0m[32m ✅ Agent Final Answer [0m[32m─╮[0m
+[32m│[0m                         [32m│[0m
+[32m│[0m  [37mAgent: [0m[1;92mFinancial [0m      [32m│[0m
+[32m│[0m  [1;92mAdvisor & Gatekeeper[0m   [32m│[0m
+[32m│[0m                         [32m│[0m
+[32m│[0m  [37mFinal Answer:[0m          [32m│[0m
+[32m│[0m  [92mSince the feasibility[0m  [32m│[0m
+[32m│[0m  [92mcheck has already [0m     [32m│[0m
+[32m│[0m  [92mbeen done, and the [0m    [32m│[0m
+[32m│[0m  [92mtrip is not feasible,[0m  [32m│[0m
+[32m│[0m  [92mwe will return the [0m    [32m│[0m
+[32m│[0m  [92mexact JSON output [0m     [32m│[0m
+[32m│[0m  [92mfrom the [0m              [32m│[0m
+[32m│[0m  [92mfeasibility_check [0m     [32m│[0m
+[32m│[0m  [92mtask.[0m                  [32m│[0m
+[32m│[0m                         [32m│[0m
+[32m│[0m  [92m```json[0m                [32m│[0m
+[32m│[0m  [92m{[0m                      [32m│[0m
+[32m│[0m  [92m  "is_feasible": [0m      [32m│[0m
+[32m│[0m  [92mfalse,[0m                 [32m│[0m
+[32m│[0m  [92m  "reason": "The [0m      [32m│[0m
+[32m│[0m  [92mdaily spend per [0m       [32m│[0m
+[32m│[0m  [92mperson is less than [0m   [32m│[0m
+[32m│[0m  [92mthe minimum required [0m  [32m│[0m
+[32m│[0m  [92mbudget of 2000 INR.",[0m  [32m│[0m
+[32m│[0m  [92m  "estimated_travel_c[0m  [32m│[0m
+[32m│[0m  [92most": 0,[0m               [32m│[0m
+[32m│[0m  [92m  "daily_spend_per_pe[0m  [32m│[0m
+[32m│[0m  [92mrson": 8333.33,[0m        [32m│[0m
+[32m│[0m  [92m  "message": [0m          [32m│[0m
+[32m│[0m  [92m"Unfortunately, this [0m  [32m│[0m
+[32m│[0m  [92mtrip is not [0m           [32m│[0m
+[32m│[0m  [92mfinancially feasible [0m  [32m│[0m
+[32m│[0m  [92mwith your given [0m       [32m│[0m
+[32m│[0m  [92mbudget and travel [0m     [32m│[0m
+[32m│[0m  [92mplans."[0m                [32m│[0m
+[32m│[0m  [92m}[0m                      [32m│[0m
+[32m│[0m  [92m```[0m                    [32m│[0m
+[32m│[0m                         [32m│[0m
+[32m╰─────────────────────────╯[0m
+
+
+[Rate Limit Protection] Sleeping for 60 seconds to reset TPM quota...
+
+[32m╭─[0m[32m─[0m[32m 📋 Task Completion [0m[32m──[0m[32m─╮[0m
+[32m│[0m                         [32m│[0m
+[32m│[0m  [1;32mTask Completed[0m         [32m│[0m
+[32m│[0m  [37mName: [0m                 [32m│[0m
+[32m│[0m  [32mbudget_task[0m            [32m│[0m
+[32m│[0m  [37mAgent: [0m                [32m│[0m
+[32m│[0m  [32mFinancial Advisor & [0m   [32m│[0m
+[32m│[0m  [32mGatekeeper[0m             [32m│[0m
+[32m│[0m                         [32m│[0m
+[32m│[0m                         [32m│[0m
+[32m│[0m                         [32m│[0m
+[32m╰─────────────────────────╯[0m
+
+TripCrew executed successfully!
+[32m╭─[0m[32m───[0m[32m Crew Completion [0m[32m───[0m[32m─╮[0m
+[32m│[0m                         [32m│[0m
+[32m│[0m  [1;32mCrew Execution [0m        [32m│[0m
+[32m│[0m  [1;32mCompleted[0m              [32m│[0m
+[32m│[0m  [37mName: [0m                 [32m│[0m
+[32m│[0m  [32mcrew[0m                   [32m│[0m
+[32m│[0m  [37mID: [0m                   [32m│[0m
+[32m│[0m  [32mf75f81d4-b42f-4e1f-92[0m  [32m│[0m
+[32m│[0m  [32m70-853a5706e1ab[0m        [32m│[0m
+[32m│[0m  [37mFinal Output: Since [0m   [32m│[0m
+[32m│[0m  [37mthe feasibility check[0m  [32m│[0m
+[32m│[0m  [37mhas already been [0m      [32m│[0m
+[32m│[0m  [37mdone, and the trip is[0m  [32m│[0m
+[32m│[0m  [37mnot feasible, we will[0m  [32m│[0m
+[32m│[0m  [37mreturn the exact JSON[0m  [32m│[0m
+[32m│[0m  [37moutput from the [0m       [32m│[0m
+[32m│[0m  [37mfeasibility_check [0m     [32m│[0m
+[32m│[0m  [37mtask.[0m                  [32m│[0m
+[32m│[0m                         [32m│[0m
+[32m│[0m  [37m```json[0m                [32m│[0m
+[32m│[0m  [37m{[0m                      [32m│[0m
+[32m│[0m  [37m  "is_feasible": [0m      [32m│[0m
+[32m│[0m  [37mfalse,[0m                 [32m│[0m
+[32m│[0m  [37m  "reason": "The [0m      [32m│[0m
+[32m│[0m  [37mdaily spend per [0m       [32m│[0m
+[32m│[0m  [37mperson is less than [0m   [32m│[0m
+[32m│[0m  [37mthe minimum required [0m  [32m│[0m
+[32m│[0m  [37mbudget of 2000 INR.",[0m  [32m│[0m
+[32m│[0m  [37m  "estimated_travel_c[0m  [32m│[0m
+[32m│[0m  [37most": 0,[0m               [32m│[0m
+[32m│[0m  [37m  "daily_spend_per_pe[0m  [32m│[0m
+[32m│[0m  [37mrson": 8333.33,[0m        [32m│[0m
+[32m│[0m  [37m  "message": [0m          [32m│[0m
+[32m│[0m  [37m"Unfortunately, this [0m  [32m│[0m
+[32m│[0m  [37mtrip is not [0m           [32m│[0m
+[32m│[0m  [37mfinancially feasible [0m  [32m│[0m
+[32m│[0m  [37mwith your given [0m       [32m│[0m
+[32m│[0m  [37mbudget and travel [0m     [32m│[0m
+[32m│[0m  [37mplans."[0m                [32m│[0m
+[32m│[0m  [37m}[0m                      [32m│[0m
+[32m│[0m  [37m```[0m                    [32m│[0m
+[32m│[0m                         [32m│[0m
+[32m│[0m                         [32m│[0m
+[32m╰─────────────────────────╯[0m
+Result output length: 
+463

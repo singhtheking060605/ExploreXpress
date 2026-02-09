@@ -2,11 +2,9 @@ const NodeGeocoder = require('node-geocoder');
 const geolib = require('geolib');
 
 const options = {
-    provider: 'openstreetmap',
-    // Optional depending on your needs
-    // httpAdapter: 'https', // Default
-    // apiKey: 'YOUR_API_KEY', // Check if openstreetmap needs one (it usually doesn't for low volume)
-    formatter: null // 'gpx', 'string', ...
+    provider: 'mapbox',
+    apiKey: process.env.MAPBOX_ACCESS_TOKEN,
+    formatter: null
 };
 
 const geocoder = NodeGeocoder(options);
@@ -52,28 +50,23 @@ const checkFeasibility = async (source, destination, days, travelers, budget) =>
         console.log(`Distance between ${source} and ${destination}: ${distanceKm.toFixed(2)} km`);
 
         // 3. Estimate Transport Cost (Per Person)
-        // Flight: 3500 + (DistanceKm * 4.5)
-        const flightCost = 3500 + (distanceKm * 4.5);
-        // Train: 500 + (DistanceKm * 1.8) (AC Tier 2)
-        const trainCost = 500 + (distanceKm * 1.8);
+        // Bus/Train (Sleeper): 300 + (DistanceKm * 1.5)
+        const minTransport = 300 + (distanceKm * 1.5);
 
-        // Min Transport Cost (One Way)
-        const oneWayTransport = Math.min(flightCost, trainCost);
         // Round Trip
-        const totalTransportPerPerson = oneWayTransport * 2;
+        const totalTransportPerPerson = minTransport * 2;
         const totalTransportCost = totalTransportPerPerson * travelers;
 
         // 4. Estimate Stay Cost
         // Rooms Needed = Ceil(travelers / 2)
         const roomsNeeded = Math.ceil(travelers / 2);
-        // Hotel Cost = Rooms * 3000 * (days - 1) (Nights = days - 1)
-        // Ensure at least 1 night if days > 0
+        // Hotel Cost = Rooms * 1500 * (days - 1) (Budget Hotel)
         const nights = Math.max(1, days - 1);
-        const totalHotelCost = roomsNeeded * 3000 * nights;
+        const totalHotelCost = roomsNeeded * 1500 * nights;
 
         // 5. Estimate Food/Misc Cost
-        // 1000 * travelers * days
-        const totalFoodCost = 1000 * travelers * days;
+        // 800 * travelers * days (Conservative/Budget)
+        const totalFoodCost = 800 * travelers * days;
 
         // 6. Total Minimum Budget
         const minNeeded = Math.round(totalTransportCost + totalHotelCost + totalFoodCost);

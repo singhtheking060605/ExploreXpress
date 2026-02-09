@@ -19,7 +19,12 @@ const generateSearchHash = (destination, days, budget, travelStyle) => {
 // @access  Public (or Private if using auth)
 const createTripPlan = async (req, res) => {
     try {
-        const { destination, origin, days, budget, travelers, travel_style, user_id, forceRefresh } = req.body;
+        let { destination, origin, days, budget, travelers, travel_style, user_id, forceRefresh } = req.body;
+
+        // Sanitize budget (remove commas)
+        if (typeof budget === 'string') {
+            budget = budget.replace(/,/g, '');
+        }
 
         if (!destination || !origin || !days || !budget) {
             return res.status(400).json({ error: "Missing required fields: destination, origin, days, budget" });
@@ -70,12 +75,8 @@ const createTripPlan = async (req, res) => {
         const feasibilityResult = await checkFeasibility(origin, destination, parseInt(days), parseInt(travelers || 1), parseInt(budget));
 
         if (feasibilityResult && feasibilityResult.allowed === false) {
-            console.log(`[FEASIBILITY CHECK] Trip rejected by Math Logic: ${feasibilityResult.message}`);
-            return res.status(400).json({
-                error: `Budget too low! ${feasibilityResult.message}`,
-                min_needed: feasibilityResult.min_needed,
-                details: feasibilityResult
-            });
+            console.log(`[FEASIBILITY WARNING] Trip flagged by Math Logic: ${feasibilityResult.message} (Proceeding to AI anyway)`);
+            // Do NOT return early. Let AI Engine handle rejection or adjustment.
         }
         // ---------------------------------------
 
@@ -83,11 +84,24 @@ const createTripPlan = async (req, res) => {
 
         // 3. Call AI Engine
         // aiPayload is already defined above
-
-        const aiResponse = await axios.post("http://localhost:8000/plan-trip", aiPayload);
+        console.log(`[AI REQUEST] Sending request to AI Engine (Timeout: 300s)...`);
+        const aiResponse = await axios.post("http://localhost:8000/plan-trip", aiPayload, {
+            timeout: 300000 // 5 minutes (300,000 ms) because AI Engine sleeps for 30s+
+        });
+        console.log(`[AI RESPONSE] Received response from AI Engine.`);
         let tripData = aiResponse.data;
 
-        // Fallback for previous error method (Backwards compatibility)
+        // Check if result returned a feasibility failure
+        if (tripData.is_feasible === false) {
+            console.log(`[FEASIBILITY CHECK] Trip rejected by AI: ${tripData.message}`);
+            return res.status(400).json({
+                error: "Budget too low!",
+                message: tripData.message,
+                details: tripData
+            });
+        }
+
+        // Fallback for older error format
         if (tripData.error === "BudgetInsufficient") {
             console.log(`[FEASIBILITY CHECK] Trip rejected by AI: ${tripData.message}`);
             return res.status(400).json({ error: tripData.message });
@@ -180,6 +194,7 @@ const createTripPlan = async (req, res) => {
 
     } catch (error) {
         console.error("Error in createTripPlan:", error.message);
+        console.error(error.stack);
         if (error.response) {
             console.error("AI Engine Error Data:", error.response.data);
             console.error("AI Engine Status:", error.response.status);

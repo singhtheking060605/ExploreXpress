@@ -42,11 +42,76 @@ def plan_trip(request: TripRequest):
     }
     
     import traceback
+    import time
     try:
-        result = TripCrew().crew().kickoff(inputs=inputs)
+        # STAGE 1: Feasibility Check
+        print(f"--- Starting Feasibility Check for {inputs['destination']} ---")
+        feasibility_result = TripCrew().feasibility_crew().kickoff(inputs=inputs)
+        
+        # Parse Feasibility Result
+        fe_output = feasibility_result.raw if hasattr(feasibility_result, 'raw') else str(feasibility_result)
+        
+        import json
+        import re
+        
+        # Helper to extract JSON
+        def extract_json(text):
+            match = re.search(r'```json\s*(\{.*?\})\s*```', text, re.DOTALL)
+            if match: return match.group(1)
+            start = text.find('{')
+            end = text.rfind('}') + 1
+            if start != -1 and end != -1: return text[start:end]
+            return text
+
+        try:
+            fe_json = json.loads(extract_json(fe_output))
+            
+            # CHECK FEASIBILITY
+            if fe_json.get("is_feasible") is False:
+                print(f"--- Trip Rejected: {fe_json.get('message')} ---")
+                return fe_json # Return early
+                
+        except json.JSONDecodeError:
+            print("Warning: Could not parse feasibility result. Proceeding with caution.")
+            
+        # STAGE 2: Logistics (Route, Itinerary, Enrichment, Hotels, Flights)
+        print("--- Feasibility Passed. Starting Logistics Planning... ---")
+        time.sleep(2) # Rate Limit Buffer
+        
+        logistics_result = TripCrew().logistics_crew().kickoff(inputs=inputs)
+        logistics_output = logistics_result.raw if hasattr(logistics_result, 'raw') else str(logistics_result)
+        
+        # STAGE 3: Budget Finalization (With Rate Limit Delay)
+        print("--- Logistics Planned. Cooling down for 60s to avoid Rate Limits... ---")
+        time.sleep(60) # Critical delay for Groq TPM reset (Safe buffer)
+        
+        print("--- Starting Budget Finalization... ---")
+        # Reuse original inputs but add 'trip_details'
+        budget_inputs = {
+            'destination': inputs['destination'],
+            'origin': inputs['origin'],
+            'days': inputs['days'],
+            'budget': inputs['budget'],
+            'travelers': inputs['travelers'],
+            'travel_style': inputs['travel_style'],
+            'current_date': inputs.get('current_date', '2025-01-01'),
+            'trip_details': logistics_output
+        }
+        
+        result = TripCrew().budget_crew().kickoff(inputs=budget_inputs)
+        
     except Exception as e:
         error_trace = traceback.format_exc()
         print(f"Error during TripCrew execution: {error_trace}")
+        
+        # Log to file
+        import os
+        log_path = os.path.join(os.getcwd(), "crash.log")
+        with open(log_path, "a") as f:
+            f.write(f"\n--- Error at {request.current_date} ---\n")
+            f.write(error_trace)
+            f.write("\n-----------------------------------\n")
+            
         from fastapi import HTTPException
         raise HTTPException(status_code=500, detail=f"TripCrew Execution Error: {str(e)}")
     
