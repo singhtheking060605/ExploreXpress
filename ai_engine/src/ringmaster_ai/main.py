@@ -32,6 +32,7 @@ from src.ringmaster_ai.crews.trip_crew.trip_crew import TripCrew
 def plan_trip(request: TripRequest):
     inputs = {
         'destination': request.destination,
+        'destinations': request.destination,
         'origin': request.origin,
         'days': str(request.days),
         'travel_style': request.travel_style,
@@ -40,7 +41,14 @@ def plan_trip(request: TripRequest):
         'current_date': request.current_date
     }
     
-    result = TripCrew().crew().kickoff(inputs=inputs)
+    import traceback
+    try:
+        result = TripCrew().crew().kickoff(inputs=inputs)
+    except Exception as e:
+        error_trace = traceback.format_exc()
+        print(f"Error during TripCrew execution: {error_trace}")
+        from fastapi import HTTPException
+        raise HTTPException(status_code=500, detail=f"TripCrew Execution Error: {str(e)}")
     
     # Check if result is a raw string or json and format it
     output = result.raw if hasattr(result, 'raw') else str(result)
@@ -50,11 +58,20 @@ def plan_trip(request: TripRequest):
     import re
     
     try:
-        # Strip markdown code blocks if present
-        cleaned_output = re.sub(r'```json\s*|\s*```', '', output).strip()
-        # Also strip generic code blocks
-        cleaned_output = re.sub(r'```\s*|\s*```', '', cleaned_output).strip()
-        
+        # robust extraction of JSON
+        import re
+        json_match = re.search(r'```json\s*(\{.*?\})\s*```', output, re.DOTALL)
+        if json_match:
+            cleaned_output = json_match.group(1)
+        else:
+            # Fallback: try to find the outer-most JSON object manually
+            start = output.find('{')
+            end = output.rfind('}') + 1
+            if start != -1 and end != -1:
+                cleaned_output = output[start:end]
+            else:
+                cleaned_output = output
+
         parsed_json = json.loads(cleaned_output)
         
         # Post-processing: Fetch images if missing

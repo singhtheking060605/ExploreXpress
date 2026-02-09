@@ -23,22 +23,32 @@ feasibility_check:
     }
   agent: budget_guardian
 
-itinerary_planning_task:
+identify_optimal_route_task:
   description: >
-    STEP 1: Check the 'feasibility_check' output from the previous task.
+    Analyze the following list of destinations: {destinations}.
+    Your goal is to determine the MOST OPTIMAL order to visit these cities.
     
-    IF 'is_feasible' is false:
-      DO NOT generate any itinerary.
-      Simply return the EXACT JSON error object from the previous task.
+    CRITICAL REQUIREMENTS:
+    1. BUDGET: Compare travel costs between the cities and recommend the sequence that minimizes transit expenses.
+    2. EVENTS: Research if there are any specific festivals, events, or "good things happening" in these cities starting from {current_date} for {days} days. If an event is time-sensitive, prioritize visiting that city on those dates.
+    3. LOGISTICS: Factor in geographical proximity to reduce travel time.
     
-    IF 'is_feasible' is true:
-      Research and build a feasible, rough day-by-day route for a trip to {destination} for {days} days.
-      Focus on logistics and travel times between general areas. Create a skeleton itinerary.
-      Do NOT worry about specific restaurant names or detailed costs yet.
+    Provide a clear rationale for WHY you chose this specific order (e.g., 'Visiting City A first saves $200 in flights' or 'City B has a festival on day 2').
   expected_output: >
-    A text outline of the route with time slots OR the error JSON.
-  agent: route_planner
+    An optimized route sequence with a detailed explanation of why this order was chosen based on budget, events, and logistics.
+  agent: travel_coordinator_agent
   context: [feasibility_check]
+
+plan_multi_city_itinerary_task:
+  description: >
+    Based on the OPTIMAL ROUTE provided in the previous task, create a comprehensive day-by-day itinerary 
+    that covers ALL cities listed. Do not skip any city.
+    Ensure smooth transitions between cities and include suggested transport modes.
+    Note: {days} is the total trip duration, distribute days wisely among cities.
+  expected_output: >
+    A full, multi-city day-by-day itinerary including all destinations in the optimized order.
+  agent: itinerary_specialist_agent
+  context: [identify_optimal_route_task]
 
 enrichment_task:
   description: >
@@ -52,7 +62,7 @@ enrichment_task:
   expected_output: >
     A detailed itinerary with specific place names and descriptions OR the error JSON.
   agent: local_guide
-  context: [feasibility_check, itinerary_planning_task]
+  context: [feasibility_check, plan_multi_city_itinerary_task]
 
 hotel_task:
   description: >

@@ -187,9 +187,20 @@ const createTripPlan = async (req, res) => {
         console.error("Error in createTripPlan:", error.message);
         if (error.response) {
             console.error("AI Engine Error Data:", error.response.data);
-            return res.status(error.response.status).json({ error: "AI Engine Error", details: error.response.data });
+            console.error("AI Engine Status:", error.response.status);
+            return res.status(error.response.status).json({
+                error: "AI Engine Error",
+                message: error.response.data.detail || "Error from AI Engine",
+                details: error.response.data
+            });
+        } else if (error.request) {
+            console.error("AI Engine Unreachable - Is it running on port 8000?");
+            return res.status(503).json({
+                error: "AI Engine Offline",
+                message: "The AI generation service is currently unavailable. Please ensure it's running."
+            });
         }
-        res.status(500).json({ error: "Internal Server Error" });
+        res.status(500).json({ error: "Internal Server Error", message: error.message });
     }
 };
 

@@ -8,5 +8,5 @@ requests
 crewai-tools
 langchain-google-genai
 langchain-groq
-langchain-groq
 langchain-openai
+litellm

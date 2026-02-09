@@ -77,7 +77,7 @@ const ExploreCard = ({ trip, onOpenModal }) => {
                         {trip.category}
                     </span>
                     {timeLeft && timeLeft !== 'Completed' && (
-                        <span className={`px - 3 py - 1 rounded - full text - xs font - bold uppercase tracking - wider shadow - sm flex items - center gap - 1 border ${timeLeft === 'Happening Now!' || timeLeft === 'Happening Daily'
+                        <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider shadow-sm flex items-center gap-1 border ${timeLeft === 'Happening Now!' || timeLeft === 'Happening Daily'
                             ? 'bg-red-500 text-white border-red-400 animate-pulse'
                             : 'bg-slate-900/60 backdrop-blur-md text-white border-white/20'
                             } `}>
@@ -136,7 +136,7 @@ const ExploreCard = ({ trip, onOpenModal }) => {
                                     <div key={idx} className="flex items-center gap-3 group/event cursor-default p-2 -mx-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
                                         <div className="flex-shrink-0 w-12 text-center bg-slate-100 dark:bg-slate-800 rounded-xl p-1 border border-slate-200 dark:border-slate-700 shadow-sm">
                                             <div className="text-[10px] font-bold text-red-500 uppercase leading-tight">{top}</div>
-                                            <div className={`font - bold text - slate - 800 dark: text - slate - 200 leading - tight ${bottom.length > 3 ? 'text-[10px]' : 'text-sm'} `}>{bottom}</div>
+                                            <div className={`font-bold text-slate-800 dark:text-slate-200 leading-tight ${bottom.length > 3 ? 'text-[10px]' : 'text-sm'} `}>{bottom}</div>
                                         </div>
                                         <div className="min-w-0">
                                             <div className="text-sm font-bold text-slate-700 dark:text-slate-200 truncate group-hover/event:text-brand-primary transition-colors">
